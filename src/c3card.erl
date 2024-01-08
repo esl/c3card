@@ -10,13 +10,18 @@
 start() ->
     {ok, _Pid} = logger_manager:start_link(#{}),
     c3card_wifi:start([]),
+    timer:sleep(5_000), %% TODO: Fix this mess
     c3card_app:start(normal, []),
     loop().
 
 loop() ->
-    timer:sleep(500),
-    Reading = c3card_sensor:read_sensor(),
+    timer:sleep(1000),
+    {ok, {Hum, Temp, RH}} = c3card_sensor:read_sensor(),
     Buttons = c3card_buttons:button_status(),
-    io:format("reading: ~p~n", [Reading]),
-    io:format("buttons: ~p~n", [Buttons]),
+    Payload = #{readings => [#{type => humidity, data => Hum},
+			     #{type => relative_humidity, data => RH},
+			     #{type => temperature, data => Temp}],
+		buttons => Buttons},
+    ok = c3card_socket:send_data(Payload),
+    io:format("payload: ~p~n", [Payload]),
     loop().

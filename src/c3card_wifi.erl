@@ -13,6 +13,7 @@
 
 %% API
 
+%% TODO: Callbacks are not being fired?
 start(_Config) ->
     NetConfig =
         [{sntp,
@@ -26,7 +27,7 @@ start(_Config) ->
 	   {psk, ?DEFAULT_STA_PSK}]}],
     case network:start(NetConfig) of
         {ok, _Pid} = Res ->
-            Res;
+	    Res;
         Error ->
             ?LOG_ERROR("an error happened: ~p", [Error]),
             Error

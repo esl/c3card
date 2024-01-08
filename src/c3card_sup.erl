@@ -29,7 +29,8 @@ init([]) ->
     ChildSpecs =
 	[
 	 worker(c3card_sensor, Config),
-	 worker(c3card_buttons, Config)
+	 worker(c3card_buttons, Config),
+	 worker(c3card_socket, Config)
 	 %%worker(c3card_screen, Config)
 	],
     {ok, {SupFlags, ChildSpecs}}.
