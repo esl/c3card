@@ -15,13 +15,15 @@ start() ->
     c3card_wifi:start(Config),
     c3card_app:start(normal, []),
     ?LOG_NOTICE("entering loop..."),
-    loop().
+    loop(#{platform => atomvm:platform()}).
 
-loop() ->
+loop(#{platform := Platform} = State) ->
     timer:sleep(1_000),
     {ok, Readings} = c3card_sensor:read_sensors(),
     {ok, Buttons} = c3card_buttons:button_status(),
     Payload = #{readings => Readings,
+		platform => Platform,
+		system_info => c3card_system:info(),
 		control => c3card_comm:get_port(),
 		buttons => Buttons},
     case c3card_data:send_data(Payload) of
@@ -30,6 +32,6 @@ loop() ->
 	Error ->
 	    ?LOG_ERROR("error sending data: ~p", [Error])
     end,
-    loop().
+    loop(State).
 
 %% Internal functions
