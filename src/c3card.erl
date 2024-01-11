@@ -8,9 +8,9 @@
 -export([start/0]).
 
 start() ->
+    Config = c3card_config:reset_config(),
     {ok, _Pid} = logger_manager:start_link(#{}),
-    c3card_wifi:start([]),
-    timer:sleep(5_000), %% TODO: Fix this mess
+    c3card_wifi:start(Config),
     c3card_app:start(normal, []),
     loop().
 

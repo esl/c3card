@@ -5,8 +5,6 @@
 
 -module(c3card_config).
 
--include_lib("kernel/include/logger.hrl").
-
 -include("config.hrl").
 
 -export([read_config/0,
@@ -37,13 +35,19 @@ reset_config() ->
 
 default_config() ->
     [
-     {c3card, [{sda, ?DEFAULT_SDA_PIN},
-	       {scl, ?DEFAULT_SCL_PIN}]},
      {c3card_buttons, []},
-     {c3card_neopixel, [{neopixel_pin, ?DEFAULT_NEOPIXEL_PIN},
-			{neopixel_total_pixels, ?DEFAULT_NEOPIXEL_TOTAL_PIXELS}]},
+     {c3card_neopixel, [{pin, ?DEFAULT_NEOPIXEL_PIN},
+			{total_pixels, ?DEFAULT_NEOPIXEL_TOTAL_PIXELS}]},
      {c3card_screen, []},
-     {c3card_sensor, []},
-     {c3card_wifi, [{sta, ?DEFAULT_STA_SSID},
+     {c3card_comm, [{handler, ?DEFAULT_GW_HANDLER},
+		    {backend, ?DEFAULT_INET_BACKEND},
+		    {gateway, ?DEFAULT_GW_HOST},
+		    {port, ?DEFAULT_GW_COMM_PORT}]},
+     {c3card_data, [{gateway, ?DEFAULT_GW_HOST},
+		    {port, ?DEFAULT_GW_DATA_PORT}]},
+     {c3card_sensor, [{sensors, ?DEFAULT_SENSORS},
+		      {sda, ?DEFAULT_SDA_PIN},
+		      {scl, ?DEFAULT_SCL_PIN}]},
+     {c3card_wifi, [{ssid, ?DEFAULT_STA_SSID},
 		    {psk, ?DEFAULT_STA_PSK}]}
     ].

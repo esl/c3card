@@ -36,8 +36,9 @@ start_link(Config) ->
 %% gen_server callbacks
 
 init(Config) ->
-    NeoPixelPin = proplists:get_value(neopixel_pin, Config),
-    NeoPixelTotal = proplists:get_value(neopixel_total_pixels, Config),
+    ?LOG_NOTICE("starting neopixels"),
+    NeoPixelPin = proplists:get_value(pin, Config),
+    NeoPixelTotal = proplists:get_value(total_pixels, Config),
     {ok, NeoPixel} = neopixel:start(NeoPixelPin, NeoPixelTotal),
     ok = neopixel:clear(NeoPixel),
     {ok, #{neopixel => NeoPixel}}.
