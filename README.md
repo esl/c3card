@@ -1,5 +1,7 @@
 # C3Card
 
+![c3card](/images/c3card.jpg)
+
 A workshop at [CodeBEAM America 2024](https://codebeamamerica.com/)
 showcasing custom hardware and Erlang-based firmware development.
 
