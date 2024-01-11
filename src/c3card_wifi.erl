@@ -37,13 +37,13 @@ start(Config) ->
 %% internal functions
 
 got_ip(IpInfo) ->
-    ?LOG_DEBUG("got IP info: ~p", [IpInfo]).
+    ?LOG_NOTICE("IP: ~p", [IpInfo]).
 
 connected() ->
-    ?LOG_DEBUG("fully connected", []).
+    ?LOG_NOTICE("fully connected", []).
 
 disconnected() ->
     ?LOG_WARNING("disconnected", []).
 
 ntp_syncronized(_Timeval) ->
-    ?LOG_DEBUG("NTP syncronized", []).
+    ?LOG_NOTICE("NTP syncronized", []).

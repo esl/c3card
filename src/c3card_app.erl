@@ -14,7 +14,7 @@
 %% application callbacks
 
 start(_StartType, _StartArgs) ->
-    ?LOG_DEBUG("starting application"),
+    ?LOG_NOTICE("starting application"),
     c3card_sup:start_link().
 
 stop(_State) ->

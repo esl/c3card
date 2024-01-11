@@ -40,7 +40,7 @@ start_link(Config) ->
 %% gen_server callbacks
 
 init(_Config) ->
-    ?LOG_DEBUG("starting buttons: ~p", [?BUTTONS]),
+    ?LOG_NOTICE("starting buttons: ~p", [?BUTTONS]),
     GPIO = gpio:start(),
     lists:map(fun({_Label, Pin}) ->
 		      ok = gpio:set_direction(GPIO, Pin, input),
