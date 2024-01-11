@@ -23,10 +23,10 @@
 
 -define(SERVER, ?MODULE).
 
--define(BTN1, {1, 2}).
--define(BTN2, {2, 3}).
--define(BTN3, {3, 4}).
--define(BTN4, {4, 5}).
+-define(BTN1, {1, 5}).
+-define(BTN2, {2, 6}).
+-define(BTN3, {3, 7}).
+-define(BTN4, {4, 8}).
 -define(BUTTONS, [?BTN1, ?BTN2, ?BTN3, ?BTN4]).
 
 %% API

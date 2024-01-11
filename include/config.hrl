@@ -6,8 +6,8 @@
 -define(DEFAULT_GW_HOST, {192, 168, 0, 20}).
 -define(DEFAULT_GW_PORT, 9999).
 
--define(DEFAULT_SDA_PIN, 6).
--define(DEFAULT_SCL_PIN, 7).
+-define(DEFAULT_SDA_PIN, 2).
+-define(DEFAULT_SCL_PIN, 3).
 
 -define(DEFAULT_NEOPIXEL_PIN, 4).
 -define(DEFAULT_NEOPIXEL_TOTAL_PIXELS, 3).
