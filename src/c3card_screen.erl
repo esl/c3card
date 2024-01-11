@@ -11,7 +11,8 @@
 
 -behaviour(gen_server).
 
--export([switch_screen/1,
+-export([draw_text/1,
+	 switch_screen/1,
 	 start_link/1]).
 
 -export([init/1,
@@ -24,6 +25,9 @@
 -callback draw() -> {ok, binary()} | {error, Reason :: term()}.
 
 %% API
+
+draw_text(Text) ->
+    gen_server:call(?SERVER, {draw_text, Text}).
 
 switch_screen(Screen) when is_atom(Screen) ->
     gen_server:call(?SERVER, {switch_screen, Screen}).
@@ -41,6 +45,10 @@ init(_Config) ->
     ssd1306:set_contrast(SSD1306, 0),
     {ok, #{display => SSD1306}}.
 
+handle_call({draw_text, Text}, _From, #{display := SSD1306} = State) ->
+    ssd1306:clear(SSD1306),
+    ssd1306:set_text(SSD1306, Text),
+    {reply, ok, State};
 handle_call({switch_screen, Screen}, _From, #{display := SSD1306} = State) ->
     ssd1306:clear(SSD1306),
     Reply =
