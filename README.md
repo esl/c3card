@@ -9,7 +9,6 @@ showcasing custom hardware and Erlang-based firmware development.
   - [Hardware](#hardware)
   - [Firmware Overview](#firmware-overview)
   - [Getting Started](#getting-started)
-  - [Usage](#usage)
   - [References](#references)
   - [Contributing](#contributing)
   - [License](#license)
