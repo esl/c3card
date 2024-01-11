@@ -85,6 +85,12 @@ card in order to have an starting image that can run the BEAM files.
 You can follow the instructions at the [AtomVM getting started
 guide](https://www.atomvm.net/doc/master/getting-started-guide.html).
 
+If you are compiling AtomVM from scratch, you need to compile a couple
+of extra components that are not included by default:
+
+  - [SSD1306 driver](https://github.com/atomvm/atomvm_ssd1306)
+  - [Neopixel driver](https://github.com/atomvm/atomvm_neopixel)
+
 ## Getting Started
 
 ### Building the firmware
