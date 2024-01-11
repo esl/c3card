@@ -28,10 +28,12 @@ init([]) ->
     Config = c3card_config:read_config(),
     ChildSpecs =
 	[
-	 worker(c3card_sensor, Config),
+	 %%worker(c3card_screen, Config),
+	 worker(c3card_data, Config),
+	 worker(c3card_comm, Config),
 	 worker(c3card_buttons, Config),
-	 worker(c3card_socket, Config)
-	 %%worker(c3card_screen, Config)
+	 worker(c3card_neopixel, Config),
+	 worker(c3card_sensor, Config)
 	],
     {ok, {SupFlags, ChildSpecs}}.
 

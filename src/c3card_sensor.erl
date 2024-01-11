@@ -7,11 +7,9 @@
 
 -include_lib("kernel/include/logger.hrl").
 
--include("config.hrl").
-
 -behaviour(gen_server).
 
--export([read_sensor/0,
+-export([read_sensors/0,
 	 start_link/1]).
 
 -export([init/1,
@@ -23,23 +21,36 @@
 
 %% API
 
-read_sensor() ->
-    gen_server:call(?SERVER, read_sensor).
+read_sensors() ->
+    gen_server:call(?SERVER, read_sensors).
 
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 
 %% gen_server callbacks
 
-init(_Config) ->
-    {ok, I2CBus} = i2c_bus:start(#{sda => ?DEFAULT_SDA_PIN,
-				   scl => ?DEFAULT_SCL_PIN}),
-    {ok, AHT} = aht20:start_link(I2CBus, []),
-    ?LOG_DEBUG("starting sensor"),
-    {ok, #{i2c_bus => I2CBus, aht => AHT}}.
+init(Config) ->
+    SDA = proplists:get_value(sda, Config),
+    SCL = proplists:get_value(scl, Config),
+    {ok, I2CBus} = i2c_bus:start(#{sda => SDA, scl => SCL}),
+    Sensors = lists:map(fun({Mod, Fun, Opts}) ->
+				{ok, Pid} = Mod:Fun(I2CBus, Opts),
+				{Mod, Pid}
+			end, proplists:get_value(sensors, Config)),
+    ?LOG_NOTICE("starting sensors: ~p", [Sensors]),
+    {ok, #{i2c_bus => I2CBus, sensors => Sensors}}.
 
-handle_call(read_sensor, _From, #{aht := AHT} = State) ->
-    {reply, aht20:take_reading(AHT), State};
+handle_call(read_sensors, _From, #{sensors := Sensors} = State) ->
+    Readings0 = lists:map(fun({Mod, Pid}) ->
+				 case Mod:take_reading(Pid) of
+				     {ok, Reading} -> {Mod, Reading};
+				     {error, Reason} -> {Mod, Reason}
+				 end
+			 end, Sensors),
+    Readings = maps:map(fun(Sensor, Reading) ->
+					    deaggregate_reading(Sensor, Reading)
+				    end, maps:from_list(Readings0)),
+    {reply, {ok, Readings}, State};
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 
@@ -50,3 +61,18 @@ handle_info(_Message, State) ->
     {noreply, State}.
 
 %% internal functions
+
+deaggregate_reading(bme280, {Temp, Pressure, Hum}) ->
+    [
+     #{type => humidity, data => Hum},
+     #{type => pressure, data => Pressure},
+     #{type => temperature, data => Temp}
+    ];
+deaggregate_reading(aht20, {Hum, Temp, RH}) ->
+    [
+     #{type => humidity, data => Hum},
+     #{type => relative_humidity, data => RH},
+     #{type => temperature, data => Temp}
+    ];
+deaggregate_reading(_Sensor, Error) ->
+    [#{error => Error}].

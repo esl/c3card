@@ -1,11 +1,9 @@
 %%%-------------------------------------------------------------------
-%% @doc c3card_socket public API
+%% @doc c3card_data public API
 %% @end
 %%%-------------------------------------------------------------------
 
--module(c3card_socket).
-
--include("config.hrl").
+-module(c3card_data).
 
 -behaviour(gen_server).
 
@@ -29,8 +27,9 @@ start_link(Config) ->
 
 %% gen_server callbacks
 
-init(_Config) ->
-    Host = ?DEFAULT_GW_HOST, Port = ?DEFAULT_GW_PORT,
+init(Config) ->
+    Host = proplists:get_value(gateway, Config),
+    Port = proplists:get_value(port, Config),
     case gen_tcp:connect(Host, Port, []) of
         {ok, Socket} ->
 	    {ok, Socket};

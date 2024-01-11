@@ -5,6 +5,8 @@
 
 -module(c3card).
 
+-include_lib("kernel/include/logger.hrl").
+
 -export([start/0]).
 
 start() ->
@@ -12,16 +14,22 @@ start() ->
     {ok, _Pid} = logger_manager:start_link(#{}),
     c3card_wifi:start(Config),
     c3card_app:start(normal, []),
+    ?LOG_NOTICE("entering loop..."),
     loop().
 
 loop() ->
-    timer:sleep(1000),
-    {ok, {Hum, Temp, RH}} = c3card_sensor:read_sensor(),
-    Buttons = c3card_buttons:button_status(),
-    Payload = #{readings => [#{type => humidity, data => Hum},
-			     #{type => relative_humidity, data => RH},
-			     #{type => temperature, data => Temp}],
+    timer:sleep(1_000),
+    {ok, Readings} = c3card_sensor:read_sensors(),
+    {ok, Buttons} = c3card_buttons:button_status(),
+    Payload = #{readings => Readings,
+		control => c3card_comm:get_port(),
 		buttons => Buttons},
-    ok = c3card_socket:send_data(Payload),
-    io:format("payload: ~p~n", [Payload]),
+    case c3card_data:send_data(Payload) of
+	ok ->
+	    ok;
+	Error ->
+	    ?LOG_ERROR("error sending data: ~p", [Error])
+    end,
     loop().
+
+%% Internal functions

@@ -9,7 +9,8 @@
 
 -behaviour(gen_server).
 
--export([toggle_led/1, toggle_led/2,
+-export([clear_all/0,
+	 toggle_led/1, toggle_led/2,
 	 start_link/1]).
 
 -export([init/1,
@@ -23,6 +24,9 @@
 -define(NEOPIXEL_VALUE, 15).
 
 %% API
+
+clear_all() ->
+    gen_server:call(?SERVER, clear_all).
 
 toggle_led(Led) ->
     toggle_led(Led, 0).
@@ -43,6 +47,8 @@ init(Config) ->
     ok = neopixel:clear(NeoPixel),
     {ok, #{neopixel => NeoPixel}}.
 
+handle_call(clear_all, _From, #{neopixel := NeoPixel} = State) ->
+    {reply, neopixel:clear(NeoPixel), State};
 handle_call({toggle_led, Led, Hue}, _From, #{neopixel := NeoPixel} = State) ->
     ok = neopixel:set_pixel_hsv(
 	   NeoPixel, Led, Hue,

@@ -55,7 +55,7 @@ handle_call(button_status, _From, GPIO) ->
 				 {Label, gpio:digital_read(Pin)}
 			 end,
 			 ?BUTTONS)),
-    {reply, Status, GPIO};
+    {reply, {ok, Status}, GPIO};
 handle_call(_Message, _From, State) ->
     {reply, error, State}.
 
