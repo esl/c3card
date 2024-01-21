@@ -29,9 +29,9 @@ compatibility with AtomVM.
 
 There is also a Neopixel LED array for it's programmable RGB
 capabilities, allowing for a wide range of visual outputs. An AHT20
-sensor for cheap, low-powered and high-precision source for
-temperature readings. An SSD1306 OLED display as an effective solution
-for real-time data display, offering a 128x64 pixel resolution.
+sensor for cheap, low-powered and high-precision temperature
+readings. An SSD1306 OLED display as an effective solution for
+real-time data display, offering a 128x64 pixel resolution.
 
 And the last stellar feature of this project is the use of AtomVM, a
 new implementation of the BEAM targetted at microcontrollers and
@@ -68,7 +68,7 @@ And the default IO pinouts are mapped as:
 As mentioned before, we are going to implement the application using
 Erlang and leveraging the AtomVM BEAM implementation.
 
-The application reassembles a regular OTP application structure with
+The application resembles a regular OTP application structure with
 some caveats to take into consideration.
 
 ### Dependencies
@@ -81,7 +81,7 @@ some caveats to take into consideration.
 ### Installing the AtomVM image
 
 Before installing the application we need to flash AtomVM to the C3
-card in order to have an starting image that can run the BEAM files.
+card in order to have a starting image that can run the BEAM files.
 
 You can follow the instructions at the [AtomVM getting started
 guide](https://www.atomvm.net/doc/master/getting-started-guide.html).
@@ -105,7 +105,7 @@ rebar3 compile
 ### Flashing the device
 
 The device port will vary depending on the chipset you use, but
-normally will be binded to `/dev/ttyUSB0` or `/dev/ttyACM0`.
+normally will be bound to `/dev/ttyUSB0` or `/dev/ttyACM0`.
 
 ```sh
 rebar3 atomvm esp32_flash -p $DEVICE_PORT
