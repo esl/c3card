@@ -48,8 +48,7 @@ init(Config) ->
 %% @private
 handle_call({send_data, Data}, _From, Socket) ->
     Payload = erlang:term_to_binary(Data),
-    Status = gen_tcp:send(Socket, Payload),
-    {reply, Status, Socket};
+    {reply, gen_tcp:send(Socket, Payload), Socket};
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 

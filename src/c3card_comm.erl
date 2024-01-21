@@ -96,7 +96,8 @@ cmd_loop(Handler) ->
 			Payload = erlang:term_to_binary(Reply),
 			gen_tcp:send(Socket, Payload);
 		    noreply ->
-			ok;
+			Payload = erlang:term_to_binary(noreply),
+			gen_tcp:send(Socket, Payload);
 		    {error, _Reason} = Err ->
 			Payload = erlang:term_to_binary(Err),
 			gen_tcp:send(Socket, Payload)
