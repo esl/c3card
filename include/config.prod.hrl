@@ -1,5 +1,6 @@
 -define(DEFAULT_STA_SSID, <<"ssid">>).
 -define(DEFAULT_STA_PSK, <<"12345678">>).
+-define(DEFAULT_NTP_HOST, "pool.ntp.org").
 -define(DEFAULT_GW_HOST, {192, 168, 0, 20}).
 -define(DEFAULT_GW_DATA_PORT, 9999).
 -define(DEFAULT_GW_COMM_PORT, 9998).

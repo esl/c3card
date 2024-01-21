@@ -19,27 +19,30 @@
 
 %% API
 
+%% @doc Start WiFi facilities using the provided <em>Config</em>.
+%%
+%% The WiFi interface will connect to an access point provided in
+%% <em>Config</em>. It does not support AP mode.
+-spec start(Config :: wifi_config()) -> {ok, WiFi :: pid()} | {error, Reason :: term()}.
 start(Config) ->
-    WiFiConfig = proplists:get_value(c3card_wifi, Config),
-    SSID = proplists:get_value(ssid, WiFiConfig),
-    Psk = proplists:get_value(psk, WiFiConfig),
+    SSID = proplists:get_value(ssid, Config),
+    Psk = proplists:get_value(psk, Config),
+    NTPHost = proplists:get_value(ntp, Config),
     NetConfig =
-        [{sntp,
-	  [{host, "pool.ntp.org"},
-	   {synchronized, fun ntp_syncronized/1}]},
-         {sta,
-          [{connected, fun connected/0},
+	[{sntp, [{host, NTPHost}, {synchronized, fun ntp_syncronized/1}]},
+	 {sta,
+	  [{connected, fun connected/0},
 	   {got_ip, fun got_ip/1},
-           {disconnected, fun disconnected/0},
+	   {disconnected, fun disconnected/0},
 	   {ssid, SSID},
 	   {psk, Psk}]}],
     case network:start(NetConfig) of
-        {ok, _Pid} = Res ->
+	{ok, _Pid} = Res ->
 	    timer:sleep(5_000),
 	    Res;
-        Error ->
-            ?LOG_ERROR("an error happened: ~p", [Error]),
-            Error
+	Error ->
+	    ?LOG_ERROR("an error happened: ~p", [Error]),
+	    Error
     end.
 
 %% internal functions

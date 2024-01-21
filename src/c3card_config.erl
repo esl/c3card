@@ -48,5 +48,6 @@ default_config() ->
 		      {sda, ?DEFAULT_SDA_PIN},
 		      {scl, ?DEFAULT_SCL_PIN}]},
      {c3card_wifi, [{ssid, ?DEFAULT_STA_SSID},
-		    {psk, ?DEFAULT_STA_PSK}]}
+		    {psk, ?DEFAULT_STA_PSK},
+		    {ntp, ?DEFAULT_NTP_HOST}]}
     ].
