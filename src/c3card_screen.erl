@@ -7,11 +7,10 @@
 
 -include_lib("kernel/include/logger.hrl").
 
--include("config.hrl").
-
 -behaviour(gen_server).
 
--export([draw_text/1,
+-export([draw_text/1, draw_text/2,
+	 clear/0,
 	 switch_screen/1,
 	 start_link/1]).
 
@@ -22,12 +21,20 @@
 
 -define(SERVER, ?MODULE).
 
+-define(SSD1306_ADDRESS, 16#3C).
+
 -callback draw() -> {ok, binary()} | {error, Reason :: term()}.
 
 %% API
 
 draw_text(Text) ->
-    gen_server:call(?SERVER, {draw_text, Text}).
+    draw_text(Text, []).
+
+draw_text(Text, Opts) when is_list(Opts) ->
+    gen_server:call(?SERVER, {draw_text, Text, Opts}).
+
+clear() ->
+    gen_server:call(?SERVER, clear).
 
 switch_screen(Screen) when is_atom(Screen) ->
     gen_server:call(?SERVER, {switch_screen, Screen}).
@@ -37,24 +44,38 @@ start_link(Config) ->
 
 %% gen_server callbacks
 
-init(_Config) ->
-    SSDConfig = #{sda_pin => ?DEFAULT_SDA_PIN,
-		  scl_pin => ?DEFAULT_SCL_PIN},
+%% @private
+init(Config) ->
+    I2CBus = proplists:get_value(i2c_bus, Config),
+    _GPIO = proplists:get_value(gpio, Config),
+    SSDConfig = #{i2c_bus => I2CBus,
+		  address => ?SSD1306_ADDRESS,
+		  use_nif => false,
+		  reset_pin => 10},
+    ?LOG_NOTICE("starting display"),
     {ok, SSD1306} = ssd1306:start(SSDConfig),
     ssd1306:clear(SSD1306),
-    ssd1306:set_contrast(SSD1306, 0),
-    {ok, #{display => SSD1306}}.
+    ssd1306:set_contrast(SSD1306, 255),
+    {ok, #{display => SSD1306, i2c_bus => I2CBus}}.
 
-handle_call({draw_text, Text}, _From, #{display := SSD1306} = State) ->
+%% @private
+handle_call({draw_text, Text0, Opts}, _From, #{display := SSD1306} = State) ->
+    Header = io_lib:format("c3card on ~p~n---------------~n", [atomvm:platform()]),
+    Text = io_lib:format(Text0, Opts),
     ssd1306:clear(SSD1306),
-    ssd1306:set_text(SSD1306, Text),
-    {reply, ok, State};
+    {reply, ssd1306:set_text(SSD1306, erlang:iolist_to_binary([Header, Text])), State};
+handle_call(clear, _From, #{display := SSD1306} = State) ->
+    ssd1306:clear(SSD1306),
+    Header = io_lib:format("c3card on ~p~n---------------~n", [atomvm:platform()]),
+    {reply, ssd1306:set_text(SSD1306, Header), State};
 handle_call({switch_screen, Screen}, _From, #{display := SSD1306} = State) ->
     ssd1306:clear(SSD1306),
     Reply =
 	try
 	    case Screen:draw() of
-		{ok, Binary} -> ssd1306:set_text(SSD1306, Binary);
+		{ok, Text} ->
+		    ssd1306:clear(SSD1306),
+		    ssd1306:set_text(SSD1306, Text);
 		{error, _Reason} -> ok
 	    end
 	catch

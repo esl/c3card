@@ -35,6 +35,8 @@ reset_config() ->
 
 default_config() ->
     [
+     {sda, ?DEFAULT_SDA_PIN},
+     {scl, ?DEFAULT_SCL_PIN},
      {c3card_buttons, []},
      {c3card_neopixel, []},
      {c3card_screen, []},
@@ -44,9 +46,7 @@ default_config() ->
 		    {port, ?DEFAULT_GW_COMM_PORT}]},
      {c3card_data, [{gateway, ?DEFAULT_GW_HOST},
 		    {port, ?DEFAULT_GW_DATA_PORT}]},
-     {c3card_sensor, [{sensors, ?DEFAULT_SENSORS},
-		      {sda, ?DEFAULT_SDA_PIN},
-		      {scl, ?DEFAULT_SCL_PIN}]},
+     {c3card_sensor, [{sensors, ?DEFAULT_SENSORS}]},
      {c3card_wifi, [{ssid, ?DEFAULT_STA_SSID},
 		    {psk, ?DEFAULT_STA_PSK},
 		    {ntp, ?DEFAULT_NTP_HOST}]}

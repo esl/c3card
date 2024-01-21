@@ -115,7 +115,6 @@ jobs:
       shell: bash
       working-directory: ./AtomVM/src/platforms/esp32/components/
       run: |
-        git clone --branch i2c-port-hack https://github.com/arpunk/atomvm_ssd1306
         git clone https://github.com/atomvm/atomvm_neopixel
 
     - name: "Build ${{ matrix.soc }} with idf.py"

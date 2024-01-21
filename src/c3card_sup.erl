@@ -26,22 +26,29 @@ start_link() ->
 
 %% @private
 init([]) ->
-    SupFlags = {one_for_one, ?INTENSITY, ?PERIOD},
     Config = c3card_config:read_config(),
+    SDA = proplists:get_value(sda, Config),
+    SCL = proplists:get_value(scl, Config),
+
+    GPIO = gpio:start(),
+    {ok, I2CBus} = i2c_bus:start_link(#{sda => SDA, scl => SCL}),
+
     ChildSpecs =
 	[
-	 %%worker(c3card_screen, Config),
-	 worker(c3card_data, Config),
-	 worker(c3card_comm, Config),
-	 worker(c3card_buttons, Config),
-	 worker(c3card_neopixel, Config),
-	 worker(c3card_sensor, Config)
+	 worker(c3card_screen, Config, [{i2c_bus, I2CBus}, {gpio, GPIO}]),
+	 worker(c3card_data, Config, []),
+	 worker(c3card_comm, Config, []),
+	 worker(c3card_buttons, Config, [{gpio, GPIO}]),
+	 worker(c3card_neopixel, Config, []),
+	 worker(c3card_sensor, Config, [{i2c_bus, I2CBus}])
 	],
+
+    SupFlags = {one_for_one, ?INTENSITY, ?PERIOD},
     {ok, {SupFlags, ChildSpecs}}.
 
 %% internal functions
 
-worker(Mod, Config) ->
+worker(Mod, Config, Opts) ->
     Args = proplists:get_value(Mod, Config),
-    {Mod, {Mod, start_link, [Args]},
+    {Mod, {Mod, start_link, [Args ++ Opts]},
      permanent, brutal_kill, worker, [Mod]}.

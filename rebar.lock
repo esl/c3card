@@ -11,6 +11,6 @@
        {ref,"01bbe948c579a062ac00de49c3ec3bb270433487"}},
   0},
  {<<"atomvm_ssd1306">>,
-  {git,"https://github.com/atomvm/atomvm_ssd1306",
-       {ref,"9e74aeb1a2ec6a95faa23ee137e015c9c44b5c56"}},
+  {git,"https://github.com/arpunk/atomvm_ssd1306",
+       {ref,"bdf7d3114c665636eed1407969d9c2b6563913c9"}},
   0}].

@@ -49,9 +49,10 @@ start_link(Config) ->
 
 %% gen_server callbacks
 
-init(_Config) ->
+%% @private
+init(Config) ->
     ?LOG_NOTICE("starting buttons: ~p", [?BUTTONS]),
-    GPIO = gpio:start(),
+    GPIO = proplists:get_value(gpio, Config),
     lists:map(fun({_Label, Pin}) ->
 		      ok = gpio:set_direction(GPIO, Pin, input),
 		      ok = gpio:set_pin_pull(Pin, up)

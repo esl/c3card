@@ -10,12 +10,12 @@
 -behaviour(gen_server).
 
 -export([read_sensors/0,
-	 start_link/1]).
+         start_link/1]).
 
 -export([init/1,
-	 handle_call/3,
-	 handle_cast/2,
-	 handle_info/2]).
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2]).
 
 -define(SERVER, ?MODULE).
 
@@ -49,27 +49,25 @@ start_link(Config) ->
 
 %% @private
 init(Config) ->
-    SDA = proplists:get_value(sda, Config),
-    SCL = proplists:get_value(scl, Config),
-    {ok, I2CBus} = i2c_bus:start(#{sda => SDA, scl => SCL}),
-    Sensors = lists:map(fun({Mod, Fun, Opts}) ->
-				{ok, Pid} = Mod:Fun(I2CBus, Opts),
-				{Mod, Pid}
-			end, proplists:get_value(sensors, Config)),
+    I2CBus = proplists:get_value(i2c_bus, Config),
+    Sensors = lists:map(fun({Mod, Fun, Args}) ->
+                                case Mod:Fun(I2CBus, Args) of
+                                    {ok, Pid} -> {Mod, Pid};
+                                    Error -> throw({stop, {c3card_sensors, Mod, Error}})
+                                end
+                        end, proplists:get_value(sensors, Config)),
     ?LOG_NOTICE("starting sensors: ~p", [Sensors]),
     {ok, #{i2c_bus => I2CBus, sensors => Sensors}}.
 
 %% @private
 handle_call(read_sensors, _From, #{sensors := Sensors} = State) ->
     Readings0 = lists:map(fun({Mod, Pid}) ->
-				 case Mod:take_reading(Pid) of
-				     {ok, Reading} -> {Mod, Reading};
-				     {error, Reason} -> {Mod, Reason}
-				 end
-			 end, Sensors),
-    Readings = maps:map(fun(Sensor, Reading) ->
-					    deaggregate_reading(Sensor, Reading)
-				    end, maps:from_list(Readings0)),
+                                 case Mod:take_reading(Pid) of
+                                     {ok, Reading} -> {Mod, Reading};
+                                     {error, Reason} -> {Mod, Reason}
+                                 end
+                         end, Sensors),
+    Readings = maps:map(fun deaggregate_reading/2, maps:from_list(Readings0)),
     {reply, {ok, Readings}, State};
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
