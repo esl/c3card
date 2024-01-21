@@ -14,21 +14,31 @@
 %% @doc Main AtomVM entrypoint
 start() ->
     Config = c3card_config:reset_config(),
-    {ok, _Pid} = logger_manager:start_link(#{}),
-    c3card_wifi:start(Config),
-    c3card_app:start(normal, []),
-    ?LOG_NOTICE("entering loop..."),
-    loop(#{platform => atomvm:platform()}).
+    WiFiConfig = proplists:get_value(c3card_wifi, Config),
 
-loop(#{platform := Platform} = State) ->
-    timer:sleep(1_000),
+    {ok, _} = logger_manager:start_link(#{}),
+    {ok, _} = c3card_wifi:start(WiFiConfig),
+    {ok, _} = c3card_app:start(normal, []),
+
+    ?LOG_NOTICE("entering loop..."),
+    ok = c3card_screen:draw_text("card started"),
+    loop(#{}).
+
+%% Internal functions
+
+%% @private
+loop(State) ->
+    _ = timer:sleep(500),
     {ok, Readings} = c3card_sensor:read_sensors(),
     {ok, Buttons} = c3card_buttons:button_status(),
     Payload = #{readings => Readings,
-		platform => Platform,
+		platform => esp32c3,
 		system_info => c3card_system:info(),
 		control => c3card_comm:get_port(),
 		buttons => Buttons},
+
+    handle_buttons(Buttons),
+
     case c3card_data:send_data(Payload) of
 	ok ->
 	    ok;
@@ -37,4 +47,8 @@ loop(#{platform := Platform} = State) ->
     end,
     loop(State).
 
-%% Internal functions
+%% @private
+handle_buttons(#{1 := low}) ->
+    c3card_screen:draw_text("button 1 was pressed");
+handle_buttons(_Buttons) ->
+    noop.
