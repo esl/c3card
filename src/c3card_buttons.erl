@@ -9,10 +9,6 @@
 
 -behaviour(gen_server).
 
--type button_status() :: map().
-
--export_type([button_status/0]).
-
 -export([button_status/0,
 	 start_link/1]).
 
@@ -29,11 +25,25 @@
 -define(BTN4, {4, 8}).
 -define(BUTTONS, [?BTN1, ?BTN2, ?BTN3, ?BTN4]).
 
+-type button_state() :: high | low.
+
+-type button_status() ::
+	#{1 => button_state(),
+	  2 => button_state(),
+	  3 => button_state(),
+	  4 => button_state()}.
+
+-type buttons_config() :: [{gpio, pid()}].
+
+-export_type([button_status/0]).
+
 %% API
 
+-spec button_status() -> {ok, button_status()}.
 button_status() ->
     gen_server:call(?SERVER, button_status).
 
+-spec start_link(Config :: buttons_config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 
@@ -49,6 +59,7 @@ init(_Config) ->
 	      ?BUTTONS),
     {ok, GPIO}.
 
+%% @private
 handle_call(button_status, _From, GPIO) ->
     Status = maps:from_list(
 	       lists:map(fun({Label, Pin}) ->
@@ -59,10 +70,10 @@ handle_call(button_status, _From, GPIO) ->
 handle_call(_Message, _From, State) ->
     {reply, error, State}.
 
+%% @private
 handle_cast(_Message, State) ->
     {noreply, State}.
 
+%% @private
 handle_info(_Message, State) ->
     {noreply, State}.
-
-%% internal functions

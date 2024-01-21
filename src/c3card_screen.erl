@@ -64,10 +64,10 @@ handle_call({switch_screen, Screen}, _From, #{display := SSD1306} = State) ->
 handle_call(_Msg, _From, State) ->
     {reply, ok, State}.
 
+%% @private
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
+%% @private
 handle_info(_Msg, State) ->
     {noreply, State}.
-
-%% internal functions

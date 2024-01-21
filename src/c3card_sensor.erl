@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%% @doc workshop_sensor public API
+%% @doc I²C based sensors public API
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -19,16 +19,35 @@
 
 -define(SERVER, ?MODULE).
 
+-type reading_type() :: humidity | relative_humidity | pressure | temperature.
+-type reading() ::
+	#{type => reading_type(),
+	  data => float()}
+      | #{error => Error :: term()}.
+
+-type readings() :: [reading()].
+
+-type sensors_option() ::
+        {i2c_bus, I2CBus :: i2c_bus:i2c_bus()}
+      | {sensors, [{Mod :: atom(), StartFun :: atom(), Args :: list()}]}.
+
+-type sensors_config() :: [sensors_option()].
+
+-export_type([sensors_config/0, readings/0]).
+
 %% API
 
+-spec read_sensors() -> {ok, readings()} | {error, Reason :: term()}.
 read_sensors() ->
     gen_server:call(?SERVER, read_sensors).
 
+-spec start_link(Config :: sensors_config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 
 %% gen_server callbacks
 
+%% @private
 init(Config) ->
     SDA = proplists:get_value(sda, Config),
     SCL = proplists:get_value(scl, Config),
@@ -40,6 +59,7 @@ init(Config) ->
     ?LOG_NOTICE("starting sensors: ~p", [Sensors]),
     {ok, #{i2c_bus => I2CBus, sensors => Sensors}}.
 
+%% @private
 handle_call(read_sensors, _From, #{sensors := Sensors} = State) ->
     Readings0 = lists:map(fun({Mod, Pid}) ->
 				 case Mod:take_reading(Pid) of
@@ -54,9 +74,11 @@ handle_call(read_sensors, _From, #{sensors := Sensors} = State) ->
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 
+%% @private
 handle_cast(_Message, State) ->
     {noreply, State}.
 
+%% @private
 handle_info(_Message, State) ->
     {noreply, State}.
 

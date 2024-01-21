@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%% @doc workshop top level supervisor.
+%% @doc c3card top level supervisor.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -18,11 +18,13 @@
 
 %% API
 
+-spec start_link() -> supervisor:startlink_ret().
 start_link() ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 %% supervisor callbacks
 
+%% @private
 init([]) ->
     SupFlags = {one_for_one, ?INTENSITY, ?PERIOD},
     Config = c3card_config:read_config(),

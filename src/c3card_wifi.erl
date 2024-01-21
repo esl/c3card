@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%% @doc workshop_wifi public API
+%% @doc WiFi public API and configuration
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -8,6 +8,14 @@
 -include_lib("kernel/include/logger.hrl").
 
 -export([start/1]).
+
+-type wifi_option() ::
+        {ssid, SSID :: binary()}
+      | {psk, PSK :: binary()}
+      | {ntp, Host :: string()}.
+-type wifi_config() :: [wifi_option()].
+
+-export_type([wifi_config/0]).
 
 %% API
 

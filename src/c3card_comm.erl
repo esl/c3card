@@ -19,16 +19,27 @@
 
 -define(SERVER, ?MODULE).
 
+-type comm_port() :: non_neg_integer().
+-type comms_option() ::
+	{port, comm_port()}
+      | {handler, ModHandler :: atom()}
+      | {backend, inet | socket}.
+
+-type comms_config() :: [comms_option()].
+
 %% API
 
+-spec get_port() -> comm_port().
 get_port() ->
     gen_server:call(?SERVER, get_port).
 
+-spec start_link(Config :: comms_config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 
 %% gen_server callbacks
 
+%% @private
 init(Config) ->
     Port = proplists:get_value(port, Config),
     Handler = proplists:get_value(handler, Config),
@@ -43,14 +54,17 @@ init(Config) ->
 	    {stop, Error}
     end.
 
+%% @private
 handle_call(get_port, _From, #{port := Port} = State) ->
     {reply, Port, State};
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 
+%% @private
 handle_cast(_Message, State) ->
     {noreply, State}.
 
+%% @private
 handle_info(_Message, State) ->
     {noreply, State}.
 

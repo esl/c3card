@@ -9,6 +9,9 @@
 
 -export([start/0]).
 
+%% AtomVM main function
+
+%% @doc Main AtomVM entrypoint
 start() ->
     Config = c3card_config:reset_config(),
     {ok, _Pid} = logger_manager:start_link(#{}),

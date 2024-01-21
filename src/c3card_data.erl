@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%% @doc c3card_data public API
+%% @doc Gateway data public API
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -17,16 +17,24 @@
 
 -define(SERVER, ?MODULE).
 
+-type data_option() ::
+	{gateway, inet:ip4_address()}
+      | {port, non_neg_integer()}.
+
+-type data_config() :: [data_option()].
+
 %% API
 
 send_data(Data) ->
     gen_server:call(?SERVER, {send_data, Data}).
 
+-spec start_link(Config :: data_config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 
 %% gen_server callbacks
 
+%% @private
 init(Config) ->
     Host = proplists:get_value(gateway, Config),
     Port = proplists:get_value(port, Config),
@@ -37,6 +45,7 @@ init(Config) ->
 	    {stop, Error}
     end.
 
+%% @private
 handle_call({send_data, Data}, _From, Socket) ->
     Payload = erlang:term_to_binary(Data),
     Status = gen_tcp:send(Socket, Payload),
@@ -44,9 +53,11 @@ handle_call({send_data, Data}, _From, Socket) ->
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 
+%% @private
 handle_cast(_Message, State) ->
     {noreply, State}.
 
+%% @private
 handle_info({tcp_closed, Socket}, Socket) ->
     {stop, tcp_closed};
 handle_info({tcp_error, Socket, Reason}, Socket) ->
@@ -55,5 +66,3 @@ handle_info({tcp, Socket, _Packet}, Socket) ->
     {noreply, Socket};
 handle_info(_Message, State) ->
     {noreply, State}.
-
-%% internal functions

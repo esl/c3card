@@ -1,3 +1,8 @@
+%%%-------------------------------------------------------------------
+%% @doc Remote gateway commands and callback implementation
+%% @end
+%%%-------------------------------------------------------------------
+
 -module(c3card_gateway_command).
 
 -behaviour(c3card_command).
@@ -6,6 +11,7 @@
 
 %% Callbacks
 
+%% @private
 handle_command({neopixel, {on, Led}}) ->
     [c3card_neopixel:toggle_led(Led, Hue) || Hue <- lists:seq(1, 350)],
     c3card_neopixel:clear_all(),
