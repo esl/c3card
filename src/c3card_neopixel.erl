@@ -23,6 +23,8 @@
 -define(NEOPIXEL_SATURATION, 100).
 -define(NEOPIXEL_VALUE, 15).
 
+-define(NEOPIXEL_PIN, 4).
+-define(NEOPIXEL_TOTAL_PIXELS, 3).
 
 -type neopixel_options() :: [].
 
@@ -53,22 +55,26 @@ start_link(Config) ->
 
 %% gen_server callbacks
 
-init(Config) ->
-    ?LOG_NOTICE("starting neopixels"),
-    NeoPixelPin = proplists:get_value(pin, Config),
-    NeoPixelTotal = proplists:get_value(total_pixels, Config),
-    {ok, NeoPixel} = neopixel:start(NeoPixelPin, NeoPixelTotal),
+%% @private
+init(_Config) ->
+    {ok, NeoPixel} = neopixel:start(?NEOPIXEL_PIN, ?NEOPIXEL_TOTAL_PIXELS),
     ok = neopixel:clear(NeoPixel),
+    ?LOG_NOTICE("starting neopixels"),
     {ok, #{neopixel => NeoPixel}}.
 
 %% @private
 handle_call(clear_all, _From, #{neopixel := NeoPixel} = State) ->
     {reply, neopixel:clear(NeoPixel), State};
 handle_call({toggle_led, Led, Hue}, _From, #{neopixel := NeoPixel} = State) ->
-    ok = neopixel:set_pixel_hsv(
+    case neopixel:set_pixel_hsv(
 	   NeoPixel, Led, Hue,
 	   ?NEOPIXEL_SATURATION, ?NEOPIXEL_VALUE
-	  ),
+	  ) of
+	ok ->
+	    noop;
+	{error, Reason} ->
+	    ?LOG_ERROR("unable to set pixel hsv: ~p", [Reason])
+    end,
     {reply, neopixel:refresh(NeoPixel), State};
 handle_call(_Msg, _From, State) ->
     {reply, ok, State}.
