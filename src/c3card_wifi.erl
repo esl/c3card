@@ -1,5 +1,8 @@
 %%%-------------------------------------------------------------------
-%% @doc WiFi public API and configuration
+%% @doc WiFi public API and configuration.
+%%
+%% The current implementation only allows for the `c3card' to connect
+%% to an specific access point provided in the initial params.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -12,18 +15,21 @@
 -type wifi_option() ::
         {ssid, SSID :: binary()}
       | {psk, PSK :: binary()}
-      | {ntp, Host :: string()}.
--type wifi_config() :: [wifi_option()].
+      | {ntp, Host :: string()}. %% WiFi configuration options
 
--export_type([wifi_config/0]).
+-type config() :: [wifi_option()].
+%% Default configuration for `c3card_wifi'
+
+-export_type([config/0]).
 
 %% API
 
-%% @doc Start WiFi facilities using the provided <em>Config</em>.
+%% @doc Start WiFi facilities using the provided `Config'.
 %%
 %% The WiFi interface will connect to an access point provided in
-%% <em>Config</em>. It does not support AP mode.
--spec start(Config :: wifi_config()) -> {ok, WiFi :: pid()} | {error, Reason :: term()}.
+%% `Config'. It does not support AP mode.
+%% @end
+-spec start(Config :: config()) -> {ok, WiFi :: pid()} | {error, Reason :: term()}.
 start(Config) ->
     SSID = proplists:get_value(ssid, Config),
     Psk = proplists:get_value(psk, Config),

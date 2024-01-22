@@ -1,5 +1,14 @@
 %%%-------------------------------------------------------------------
-%% @doc Remote gateway commands and callback implementation
+%% @doc Remote gateway commands and callback implementation.
+%%
+%% It provides demo commands that the gateway will send to the device
+%% for ensuring functionality and providing extra features.
+%%
+%% The following commands are supported:
+%% <ul>
+%%  <li>`{neopixel, {on, Led}}'</li>
+%%  <li>`ping'</li>
+%% </ul>
 %% @end
 %%%-------------------------------------------------------------------
 

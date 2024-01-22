@@ -1,5 +1,10 @@
 %%%-------------------------------------------------------------------
-%% @doc c3card_comm public API
+%% @doc Remote execution facilities.
+%%
+%% By providing a handler module that implements the `c3card_command'
+%% behaviour and a TCP port number the card will listen for binary
+%% packets that can be decoded as Erlang terms in order to invoke the
+%% handler with the payload as arguments.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -20,20 +25,28 @@
 -define(SERVER, ?MODULE).
 
 -type comm_port() :: non_neg_integer().
+%% Listening TCP port for remote command execution
+
 -type comms_option() ::
 	{port, comm_port()}
       | {handler, ModHandler :: atom()}
       | {backend, inet | socket}.
+%% Remote execution configuration options
 
--type comms_config() :: [comms_option()].
+-type config() :: [comms_option()].
+%% Default configuration for `c3card_comm'
+
+-export_type([config/0]).
 
 %% API
 
+%% @doc Return the current listening TCP control port
 -spec get_port() -> comm_port().
 get_port() ->
     gen_server:call(?SERVER, get_port).
 
--spec start_link(Config :: comms_config()) -> gen_server:start_ret().
+%% @doc Start and link the remote execution server
+-spec start_link(Config :: config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 

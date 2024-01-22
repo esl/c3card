@@ -1,5 +1,10 @@
 %%%-------------------------------------------------------------------
-%% @doc Neopixel array public API
+%% @doc Neopixel array public API.
+%%
+%% The `c3card' provides a Neopixel array of 4 leds, mapped as:
+%% <ul>
+%%  <li>`IO4': WS2812 LED</li>
+%% </ul>
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -26,11 +31,12 @@
 -define(NEOPIXEL_PIN, 4).
 -define(NEOPIXEL_TOTAL_PIXELS, 3).
 
--type neopixel_options() :: [].
+-type config() :: [].
+%% Default configuration for `c3card_neopixel'
 
 -type led() :: 0..3.
 
--export_type([neopixel_options/0, led/0]).
+-export_type([config/0, led/0]).
 
 %% API
 
@@ -49,7 +55,8 @@ toggle_led(Led, _Hue) when Led >= 3, Led < 0 ->
 toggle_led(Led, Hue) ->
     gen_server:call(?SERVER, {toggle_led, Led, Hue}).
 
--spec start_link(Config :: neopixel_options()) -> gen_server:start_ret().
+%% @doc Start and link the Neopixel array controlling server
+-spec start_link(Config :: config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 

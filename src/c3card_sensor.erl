@@ -1,5 +1,18 @@
 %%%-------------------------------------------------------------------
-%% @doc I²C based sensors public API
+%% @doc I²C based sensors public API.
+%%
+%% The `c3card' provides one I²C interfaces mapped to the following
+%% pins:
+%%
+%% <ul>
+%%   <li>`IO2': I2C SDA</li>
+%%   <li>`IO3': I2C SCL</li>
+%% </ul>
+%%
+%% It uses the `i2c_bus' provided by <a
+%% href="https://github.com/atomvm/atomvm_lib">atomvm_lib</a> for
+%% sharing access to the I²C interface provided by the ESP32C3
+%% microcontroller.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -20,28 +33,42 @@
 -define(SERVER, ?MODULE).
 
 -type reading_type() :: humidity | relative_humidity | pressure | temperature.
+%% Reading type
+
 -type reading() ::
 	#{type => reading_type(),
 	  data => float()}
       | #{error => Error :: term()}.
+%% Reading format
 
 -type readings() :: [reading()].
+%% Recorded readings
 
 -type sensors_option() ::
         {i2c_bus, I2CBus :: i2c_bus:i2c_bus()}
       | {sensors, [{Mod :: atom(), StartFun :: atom(), Args :: list()}]}.
+%% Sensor server option
 
--type sensors_config() :: [sensors_option()].
+-type config() :: [sensors_option()].
+%% Default configuration for `c3card_sensor'
 
--export_type([sensors_config/0, readings/0]).
+-export_type([config/0, readings/0]).
 
 %% API
 
+%% @doc Return all available readings from available sensors
 -spec read_sensors() -> {ok, readings()} | {error, Reason :: term()}.
 read_sensors() ->
     gen_server:call(?SERVER, read_sensors).
 
--spec start_link(Config :: sensors_config()) -> gen_server:start_ret().
+%% @doc Start and link the sensor facility.
+%%
+%% On startup, the server will try to start the drivers specified on
+%% the configuration.
+%%
+%% The `c3card' includes an internal AHT20 sensor.
+%% @end
+-spec start_link(Config :: config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 

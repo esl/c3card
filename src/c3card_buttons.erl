@@ -1,5 +1,14 @@
 %%%-------------------------------------------------------------------
-%% @doc c3card_buttons public API
+%% @doc Button status and public API.
+%%
+%% The `c3card' provides 4 different buttons, properly labeled from 1
+%% to 4, mapped to the following IO pins:
+%% <ul>
+%%  <li>`IO5': Button 1</li>
+%%  <li>`IO6': Button 2</li>
+%%  <li>`IO7': Button 3</li>
+%%  <li>`IO8': Button 4</li>
+%% </ul>
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -26,24 +35,28 @@
 -define(BUTTONS, [?BTN1, ?BTN2, ?BTN3, ?BTN4]).
 
 -type button_state() :: high | low.
+%% Default button status. `low' means the button is pressed
 
 -type button_status() ::
 	#{1 => button_state(),
 	  2 => button_state(),
 	  3 => button_state(),
-	  4 => button_state()}.
+	  4 => button_state()}. %% Button status map
 
--type buttons_config() :: [{gpio, pid()}].
+-type config() :: [{gpio, pid()}].
+%% Default configuration for `c3card_buttons'
 
--export_type([button_status/0]).
+-export_type([button_status/0, config/0]).
 
 %% API
 
+%% @doc Return the current button status
 -spec button_status() -> {ok, button_status()}.
 button_status() ->
     gen_server:call(?SERVER, button_status).
 
--spec start_link(Config :: buttons_config()) -> gen_server:start_ret().
+%% @doc Start and link the button controlling server
+-spec start_link(Config :: config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 

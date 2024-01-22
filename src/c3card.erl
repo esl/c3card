@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%% @doc C3 Card AtomVM entrypoint
+%% @doc `c3card' AtomVM entrypoint.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -11,7 +11,12 @@
 
 %% AtomVM main function
 
-%% @doc Main AtomVM entrypoint
+%% @doc Main AtomVM entrypoint.
+%%
+%% This function will prepare configuration, logging and wireless
+%% networking facilities before starting the application, and after
+%% that will loop forever taking the device readings and dispatching
+%% them to the gateway.
 start() ->
     Config = c3card_config:reset_config(),
     WiFiConfig = proplists:get_value(c3card_wifi, Config),
@@ -26,7 +31,6 @@ start() ->
 
 %% Internal functions
 
-%% @private
 loop(State) ->
     _ = timer:sleep(500),
     {ok, Readings} = c3card_sensor:read_sensors(),
@@ -47,7 +51,6 @@ loop(State) ->
     end,
     loop(State).
 
-%% @private
 handle_buttons(#{1 := low}) ->
     c3card_screen:draw_text("button 1 was pressed");
 handle_buttons(_Buttons) ->

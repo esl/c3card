@@ -7,7 +7,7 @@ showcasing custom hardware and Erlang-based firmware development.
 
 ## Table of Contents
 
-  - [Introduction](#introcution)
+  - [Introduction](#introdution)
   - [Hardware](#hardware)
   - [Firmware Overview](#firmware-overview)
   - [Getting Started](#getting-started)
@@ -109,6 +109,15 @@ normally will be bound to `/dev/ttyUSB0` or `/dev/ttyACM0`.
 
 ```sh
 rebar3 atomvm esp32_flash -p $DEVICE_PORT
+```
+
+### Documentation
+
+Documentation is provided via `ex_doc`, and can be generated with
+rebar3:
+
+```sh
+rebar3 ex_doc
 ```
 
 ## References

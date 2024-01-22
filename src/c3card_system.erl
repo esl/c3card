@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%% @doc System information public API
+%% @doc System information public API.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -12,13 +12,13 @@
 	  process_count => non_neg_integer(),
 	  port_count => non_neg_integer(),
 	  word_size => non_neg_integer(),
-	  system_architecture => string()}.
+	  system_architecture => string()}. %% System information map
 
 -export_type([info_map/0]).
 
 %% API
 
-%% @doc Return a map with basic system information.
+%% @doc Return a map with basic system information
 -spec info() -> info_map().
 info() ->
     #{atom_count => erlang:system_info(atom_count),

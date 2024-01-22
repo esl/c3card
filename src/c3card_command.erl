@@ -1,5 +1,8 @@
 %%%-------------------------------------------------------------------
-%% @doc c3card_command public API
+%% @doc `c3card_command' behaviour callbacks.
+%%
+%% Provides the required handler callbacks that the `c3card_comm'
+%% service needs to invoke once a successful payload decoding.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -9,3 +12,4 @@
     {reply, Response :: term()}
 	| noreply
 	| {error, Reason :: term()}.
+%% Handle decoded Erlang terms from the gateway

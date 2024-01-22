@@ -1,5 +1,8 @@
 %%%-------------------------------------------------------------------
-%% @doc Gateway data public API
+%% @doc Gateway TCP data socket public API.
+%%
+%% Provides an active TCP socket connected to the gateway for sending
+%% any Erlang term over the wireless interface.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -20,15 +23,22 @@
 -type data_option() ::
 	{gateway, inet:ip4_address()}
       | {port, non_neg_integer()}.
+%% Gateway configuration option
 
--type data_config() :: [data_option()].
+-type config() :: [data_option()].
+%% Default configuration for `c3card_data'
+
+-export_type([config/0]).
 
 %% API
 
+%% @doc Send any Erlang term to the gateway
+-spec send_data(Data :: term()) -> ok | {error, Reason :: term()}.
 send_data(Data) ->
     gen_server:call(?SERVER, {send_data, Data}).
 
--spec start_link(Config :: data_config()) -> gen_server:start_ret().
+%% @doc Start and link the gateway TCP connection socket
+-spec start_link(Config :: config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
 
