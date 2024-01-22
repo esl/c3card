@@ -63,8 +63,6 @@ reset_config() ->
 
 default_config() ->
     [
-     {sda, ?DEFAULT_SDA_PIN},
-     {scl, ?DEFAULT_SCL_PIN},
      {c3card_buttons, []},
      {c3card_neopixel, []},
      {c3card_screen, []},

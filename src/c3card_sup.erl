@@ -13,6 +13,9 @@
 
 -define(SERVER, ?MODULE).
 
+-define(DEFAULT_SDA_PIN, 2).
+-define(DEFAULT_SCL_PIN, 3).
+
 -define(INTENSITY, 10).
 -define(PERIOD, 1_000).
 
@@ -27,11 +30,10 @@ start_link() ->
 %% @private
 init([]) ->
     Config = c3card_config:read_config(),
-    SDA = proplists:get_value(sda, Config),
-    SCL = proplists:get_value(scl, Config),
-
+    I2CBusConfig = #{sda => ?DEFAULT_SDA_PIN,
+		     scl => ?DEFAULT_SCL_PIN},
     GPIO = gpio:start(),
-    {ok, I2CBus} = i2c_bus:start_link(#{sda => SDA, scl => SCL}),
+    {ok, I2CBus} = i2c_bus:start_link(I2CBusConfig),
 
     ChildSpecs =
 	[
