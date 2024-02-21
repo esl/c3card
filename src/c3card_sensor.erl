@@ -121,5 +121,5 @@ deaggregate_reading(aht20, {Hum, Temp, RH}) ->
      #{type => relative_humidity, data => RH},
      #{type => temperature, data => Temp}
     ];
-deaggregate_reading(_Sensor, Error) ->
-    [#{error => Error}].
+deaggregate_reading(Sensor, Error) ->
+    [#{sensor => Sensor, error => Error}].
