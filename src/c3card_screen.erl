@@ -76,7 +76,6 @@ start_link(Config) ->
 %% @private
 init(Config) ->
     I2CBus = proplists:get_value(i2c_bus, Config),
-    _GPIO = proplists:get_value(gpio, Config),
     SSDConfig = #{i2c_bus => I2CBus,
 		  address => ?SSD1306_ADDRESS,
 		  use_nif => false,

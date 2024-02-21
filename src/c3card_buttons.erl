@@ -63,24 +63,23 @@ start_link(Config) ->
 %% gen_server callbacks
 
 %% @private
-init(Config) ->
+init(_Config) ->
     ?LOG_NOTICE("starting buttons: ~p", [?BUTTONS]),
-    GPIO = proplists:get_value(gpio, Config),
     lists:map(fun({_Label, Pin}) ->
-		      ok = gpio:set_direction(GPIO, Pin, input),
+		      ok = gpio:set_pin_mode(Pin, input),
 		      ok = gpio:set_pin_pull(Pin, up)
 	      end,
 	      ?BUTTONS),
-    {ok, GPIO}.
+    {ok, #{}}.
 
 %% @private
-handle_call(button_status, _From, GPIO) ->
+handle_call(button_status, _From, State) ->
     Status = maps:from_list(
 	       lists:map(fun({Label, Pin}) ->
 				 {Label, gpio:digital_read(Pin)}
 			 end,
 			 ?BUTTONS)),
-    {reply, {ok, Status}, GPIO};
+    {reply, {ok, Status}, State};
 handle_call(_Message, _From, State) ->
     {reply, error, State}.
 

@@ -31,17 +31,18 @@ start_link() ->
 init([]) ->
     Config = c3card_config:read_config(),
     I2CBusConfig = #{sda => ?DEFAULT_SDA_PIN,
-		     scl => ?DEFAULT_SCL_PIN},
-    GPIO = gpio:start(),
+		     scl => ?DEFAULT_SCL_PIN,
+		     peripheral => <<"i2c0">>},
+
     {ok, I2CBus} = i2c_bus:start_link(I2CBusConfig),
 
     ChildSpecs =
 	[
-	 worker(c3card_screen, Config, [{i2c_bus, I2CBus}, {gpio, GPIO}]),
+	 worker(c3card_buttons, Config, []),
+	 worker(c3card_neopixel, Config, []),
+	 worker(c3card_screen, Config, [{i2c_bus, I2CBus}]),
 	 worker(c3card_data, Config, []),
 	 worker(c3card_comm, Config, []),
-	 worker(c3card_buttons, Config, [{gpio, GPIO}]),
-	 worker(c3card_neopixel, Config, []),
 	 worker(c3card_sensor, Config, [{i2c_bus, I2CBus}])
 	],
 
