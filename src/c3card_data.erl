@@ -8,6 +8,8 @@
 
 -module(c3card_data).
 
+-include_lib("kernel/include/logger.hrl").
+
 -behaviour(gen_server).
 
 -export([send_data/1,
@@ -52,10 +54,13 @@ init(Config) ->
         {ok, Socket} ->
 	    {ok, Socket};
         Error ->
-	    {stop, Error}
+	    ?LOG_WARNING("unable to connect to gateway: ~p", [Error]),
+	    {ok, offline}
     end.
 
 %% @private
+handle_call({send_data, _Data}, _From, offline) ->
+    {reply, {error, offline}, offline};
 handle_call({send_data, Data}, _From, Socket) ->
     Payload = erlang:term_to_binary(Data),
     {reply, gen_tcp:send(Socket, Payload), Socket};
