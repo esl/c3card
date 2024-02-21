@@ -5,7 +5,7 @@
 %% to 4, mapped to the following IO pins:
 %% <ul>
 %%  <li>`IO5': Button 1</li>
-%%  <li>`IO6': Button 2</li>
+%%  <li>`IO9': Button 2</li>
 %%  <li>`IO7': Button 3</li>
 %%  <li>`IO8': Button 4</li>
 %% </ul>
@@ -29,7 +29,7 @@
 -define(SERVER, ?MODULE).
 
 -define(BTN1, {1, 5}).
--define(BTN2, {2, 6}).
+-define(BTN2, {2, 9}).
 -define(BTN3, {3, 7}).
 -define(BTN4, {4, 8}).
 -define(BUTTONS, [?BTN1, ?BTN2, ?BTN3, ?BTN4]).
