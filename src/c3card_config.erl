@@ -21,7 +21,7 @@
       | {c3card_neopixel, c3card_neopixel:config()}
       | {c3card_screen, c3card_screen:config()}
       | {c3card_comm, c3card_comm:config()}
-      | {c3card_data, c3card_data:config()}
+      | {c3card_gateway, c3card_gateway:config()}
       | {c3card_sensor, c3card_sensor:config()}
       | {c3card_wifi, c3card_wifi:config()}.
 %% `c3card' configuration option
@@ -66,12 +66,14 @@ default_config() ->
      {c3card_buttons, []},
      {c3card_neopixel, []},
      {c3card_screen, []},
+     {c3card_codebeam, []},
+     {c3card_status, []},
      {c3card_comm, [{handler, ?DEFAULT_GW_HANDLER},
-		    {backend, ?DEFAULT_INET_BACKEND},
-		    {gateway, ?DEFAULT_GW_HOST},
-		    {port, ?DEFAULT_GW_COMM_PORT}]},
-     {c3card_data, [{gateway, ?DEFAULT_GW_HOST},
-		    {port, ?DEFAULT_GW_DATA_PORT}]},
+                    {backend, ?DEFAULT_INET_BACKEND},
+                    {gateway, ?DEFAULT_GW_HOST},
+                    {port, ?DEFAULT_GW_COMM_PORT}]},
+     {c3card_gateway, [{gateway, ?DEFAULT_GW_HOST},
+                       {port, ?DEFAULT_GW_DATA_PORT}]},
      {c3card_sensor, [{sensors, ?DEFAULT_SENSORS}]},
      {c3card_wifi, [{ssid, ?DEFAULT_STA_SSID},
                     {psk, ?DEFAULT_STA_PSK},

@@ -1,29 +1,30 @@
 %%%-------------------------------------------------------------------
-%% @doc Gateway TCP data socket public API.
+%% @doc Gateway TCP communications public API.
 %%
 %% Provides an active TCP socket connected to the gateway for sending
 %% any Erlang term over the wireless interface.
 %% @end
 %%%-------------------------------------------------------------------
 
--module(c3card_data).
+-module(c3card_gateway).
 
 -include_lib("kernel/include/logger.hrl").
 
 -behaviour(gen_server).
 
--export([send_data/1,
-	 start_link/1]).
+-export([reconnect/0,
+         send_data/1,
+         start_link/1]).
 
 -export([init/1,
-	 handle_call/3,
-	 handle_cast/2,
-	 handle_info/2]).
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2]).
 
 -define(SERVER, ?MODULE).
 
 -type data_option() ::
-	{gateway, inet:ip4_address()}
+        {gateway, inet:ip4_address()}
       | {port, non_neg_integer()}.
 %% Gateway configuration option
 
@@ -33,6 +34,11 @@
 -export_type([config/0]).
 
 %% API
+
+%% @doc Reconnect to the gateway
+-spec reconnect() -> ok | offline.
+reconnect() ->
+    gen_server:call(?SERVER, reconnect).
 
 %% @doc Send any Erlang term to the gateway
 -spec send_data(Data :: term()) -> ok | {error, Reason :: term()}.
@@ -50,20 +56,21 @@ start_link(Config) ->
 init(Config) ->
     Host = proplists:get_value(gateway, Config),
     Port = proplists:get_value(port, Config),
-    case gen_tcp:connect(Host, Port, []) of
-        {ok, Socket} ->
-	    {ok, Socket};
-        Error ->
-	    ?LOG_WARNING("unable to connect to gateway: ~p", [Error]),
-	    {ok, offline}
-    end.
+    ?LOG_NOTICE("starting gateway socket"),
+    {ok, #{socket => try_connect(Host, Port),
+           host => Host,
+           port => Port}}.
 
 %% @private
-handle_call({send_data, _Data}, _From, offline) ->
-    {reply, {error, offline}, offline};
-handle_call({send_data, Data}, _From, Socket) ->
+handle_call(reconnect, _From, State) ->
+    #{host := Host, port := Port} = State,
+    Socket = try_connect(Host, Port),
+    {reply, Socket, State#{socket => Socket}};
+handle_call({send_data, _Data}, _From, #{socket := offline} = State) ->
+    {reply, {error, offline}, State};
+handle_call({send_data, Data}, _From, #{socket := Socket} = State) ->
     Payload = erlang:term_to_binary(Data),
-    {reply, gen_tcp:send(Socket, Payload), Socket};
+    {reply, gen_tcp:send(Socket, Payload), State};
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 
@@ -72,11 +79,20 @@ handle_cast(_Message, State) ->
     {noreply, State}.
 
 %% @private
-handle_info({tcp_closed, Socket}, Socket) ->
+handle_info({tcp_closed, _Socket}, _State) ->
     {stop, tcp_closed};
-handle_info({tcp_error, Socket, Reason}, Socket) ->
+handle_info({tcp_error, _Socket, Reason}, _State) ->
     {stop, {tcp_error, Reason}};
-handle_info({tcp, Socket, _Packet}, Socket) ->
-    {noreply, Socket};
+handle_info({tcp, _Socket, _Packet}, State) ->
+    {noreply, State};
 handle_info(_Message, State) ->
     {noreply, State}.
+
+try_connect(Host, Port) ->
+    case gen_tcp:connect(Host, Port, []) of
+        {ok, Socket} ->
+            Socket;
+        Error ->
+            ?LOG_WARNING("unable to connect to gateway: ~p", [Error]),
+            offline
+    end.

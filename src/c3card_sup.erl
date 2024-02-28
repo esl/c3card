@@ -37,14 +37,16 @@ init([]) ->
     {ok, I2CBus} = i2c_bus:start_link(I2CBusConfig),
 
     ChildSpecs =
-	[
-	 worker(c3card_buttons, Config, []),
-	 worker(c3card_neopixel, Config, []),
-	 worker(c3card_screen, Config, [{i2c_bus, I2CBus}]),
-	 worker(c3card_data, Config, []),
-	 worker(c3card_comm, Config, []),
-	 worker(c3card_sensor, Config, [{i2c_bus, I2CBus}])
-	],
+        [
+         worker(c3card_sensor, Config, [{i2c_bus, I2CBus}]),
+         worker(c3card_buttons, Config, []),
+         worker(c3card_neopixel, Config, []),
+         worker(c3card_screen, Config, [{i2c_bus, I2CBus}]),
+         worker(c3card_gateway, Config, []),
+         worker(c3card_comm, Config, []),
+         worker(c3card_codebeam, Config, []),
+         worker(c3card_status, Config, [])
+        ],
 
     SupFlags = {one_for_one, ?INTENSITY, ?PERIOD},
     {ok, {SupFlags, ChildSpecs}}.
