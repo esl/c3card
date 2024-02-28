@@ -7,6 +7,7 @@
 %% The following commands are supported:
 %% <ul>
 %%  <li>`{neopixel, {on, Led}}'</li>
+%%  <li>`{candy, Turn}'</li>
 %%  <li>`ping'</li>
 %% </ul>
 %% @end
@@ -23,14 +24,18 @@
 %% @private
 handle_command({neopixel, {on, Led}}) ->
     spawn(fun() ->
-		  c3card_screen:draw_text("Led ~p on!", [Led]),
-		  [c3card_neopixel:toggle_led(Led, Hue) || Hue <- lists:seq(1, 350)],
-		  c3card_neopixel:clear_all(),
-		  c3card_screen:clear()
-	  end),
+                  [c3card_neopixel:toggle_led(Led, Hue)
+                   || Hue <- lists:seq(1, 350)],
+                  c3card_neopixel:clear_all()
+          end),
+    noreply;
+handle_command({candy, Turn}) ->
+    spawn(fun() ->
+                  c3card_codebeam:set_turn(Turn),
+                  c3card_screen:clear()
+          end),
     noreply;
 handle_command(ping) ->
-    c3card_screen:draw_text("Got ping!"),
     {reply, pong};
 handle_command(Command) ->
     io:format("unknown command from gateway: ~p~n", [Command]),
