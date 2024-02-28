@@ -7,16 +7,23 @@
 
 -behaviour(c3card_screen).
 
--export([draw/1]).
+-export([draw/0]).
 
 %% Callbacks
 
-draw(CardInfo) ->
+draw() ->
+    {ok, #{aht20 := [
+                     #{data := Hum, type := humidity},
+                     #{data := RelHum, type := relative_humidity},
+                     #{data := Temp, type := temperature}
+                    ]}} = c3card_sensor:read_sensors(),
+    #{process_count := ProcessCount} = c3card_system:info(),
     {{Year, Month, Day}, _} = erlang:universaltime(),
-    #{system_info := #{atom_count := AtomCount,
-                       process_count := ProcessCount,
-                       system_architecture := SystemArch}} = CardInfo,
-    SysInfo = io_lib:format("~p~n~natoms: ~p~nprocesses: ~p~n~ndate: ~p/~p/~p~n",
-                            [SystemArch, AtomCount, ProcessCount,
-			     Year, Month, Day]),
+    CurrentTurn = c3card_codebeam:candy_turn(),
+    SysInfo =
+        io_lib:format(
+          "AHT10:~n  ~pC, ~p%, ~pRH~nprocesses: ~p~nturn: ~p~ndate: ~p/~p/~p",
+          [trunc(Temp), trunc(Hum), trunc(RelHum),
+           ProcessCount, CurrentTurn, Year, Month, Day]
+         ),
     {ok, SysInfo}.

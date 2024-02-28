@@ -22,10 +22,10 @@
 
 -export([draw_text/1, draw_text/2,
          clear/0,
-	 default_screen/0,
-	 available_screens/0,
-	 switch_screen/1,
-         render_screen/2,
+         default_screen/0,
+         available_screens/0,
+         next_screen/0,
+         set_screen/1,
          start_link/1]).
 
 -export([init/1,
@@ -41,11 +41,10 @@
 -define(SCREEN_HEADER, "c3card on ~p~n---------------~n").
 
 -define(AVAILABLE_SCREENS, [{1, c3card_screen_sysinfo},
-			    {2, c3card_screen_date},
-			    {3, c3card_screen_temperature},
-			    {4, c3card_screen_codebeam}]).
+                            {2, c3card_screen_codebeam},
+                            {3, c3card_screen_demo}]).
 
--callback draw(CardInfo :: map()) -> {ok, Text :: binary()} | {error, Reason :: term()}.
+-callback draw() -> {ok, Text :: binary()} | {error, Reason :: term()}.
 
 -type screen_option() ::
         {i2c_bus, i2c_bus:i2c_bus()}
@@ -70,27 +69,12 @@ default_screen() ->
 available_screens() ->
     ?AVAILABLE_SCREENS.
 
--spec switch_screen(Screen :: screen())  -> screen().
-switch_screen({ScreenIdx, _ScreenMod}) when ScreenIdx >= 1, ScreenIdx =< 4 ->
-    case lists:keyfind(ScreenIdx + 1, 1, ?AVAILABLE_SCREENS) of
-	false -> {1, c3card_screen_sysinfo};
-	ScreenInfo  -> ScreenInfo
-    end.
+-spec next_screen()  -> screen().
+next_screen() ->
+    gen_server:call(?SERVER, next_screen).
 
-%% @doc Render a Screen providing the current card info.
--spec render_screen(Screen :: screen(), CardInfo :: map()) -> ok | {error, Reason :: term()}.
-render_screen({_ScreenIdx, ScreenMod}, CardInfo) ->
-    try
-        case ScreenMod:draw(CardInfo) of
-            {ok, Text} ->
-                draw_text(Text);
-            {error, _Reason} ->
-                ok
-        end
-    catch _C:E:_S ->
-            {error, E}
-    end.
-
+set_screen(Screen) ->
+    gen_server:cast(?SERVER, {set_screen, Screen}).
 
 %% @doc Draw a string on the OLED screen
 -spec draw_text(Text :: bitstring()) -> ok | {error, Reason :: term()}.
@@ -126,7 +110,8 @@ init(Config) ->
     ssd1306:set_contrast(SSD1306, 255),
     ?LOG_NOTICE("display started"),
     ssd1306:set_text(SSD1306, draw_header()),
-    {ok, #{display => SSD1306}}.
+    _Timer = timer_manager:send_after(100, self(), redraw),
+    {ok, #{display => SSD1306, screen => default_screen()}}.
 
 %% @private
 handle_call({draw_text, Text0, FormatOpts}, _From, #{display := SSD1306} = State) ->
@@ -134,6 +119,11 @@ handle_call({draw_text, Text0, FormatOpts}, _From, #{display := SSD1306} = State
     Text = io_lib:format(Text0, FormatOpts),
     %%ssd1306:clear(SSD1306),
     {reply, ssd1306:set_text(SSD1306, erlang:iolist_to_binary([Header, Text])), State};
+handle_call(next_screen, _From, #{screen := CurrentScreen, display := SSD1306} = State) ->
+    ssd1306:clear(SSD1306),
+    NextScreen = switch_screen(CurrentScreen),
+    render_screen(SSD1306, NextScreen),
+    {reply, NextScreen, State#{screen => NextScreen}};
 handle_call(clear, _From, #{display := SSD1306} = State) ->
     Header = draw_header(),
     ssd1306:clear(SSD1306),
@@ -142,10 +132,18 @@ handle_call(_Msg, _From, State) ->
     {reply, ok, State}.
 
 %% @private
+handle_cast({set_screen, Screen}, #{display := SSD1306} = State) ->
+    ssd1306:clear(SSD1306),
+    render_screen(SSD1306, Screen),
+    {reply, ok, State#{screen => Screen}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
 %% @private
+handle_info(redraw, #{screen := Screen, display := SSD1306} = State) ->
+    render_screen(SSD1306, Screen),
+    _Timer = timer_manager:send_after(100, self(), redraw),
+    {noreply, State};
 handle_info(_Msg, State) ->
     {noreply, State}.
 
@@ -154,3 +152,22 @@ handle_info(_Msg, State) ->
 %% @hidden
 draw_header() ->
     io_lib:format(?SCREEN_HEADER, [atomvm:platform()]).
+
+%% @hidden
+render_screen(Display, {_ScreenIdx, ScreenMod}) ->
+    case ScreenMod:draw() of
+        {ok, Text0} ->
+            Header = draw_header(),
+            Text = io_lib:format(Text0, []),
+            ssd1306:set_text(Display, erlang:iolist_to_binary([Header, Text]));
+        {error, Reason} = Err ->
+            ?LOG_ERROR("failed to draw: ~p", [Reason]),
+            Err
+    end.
+
+%% @hidden
+switch_screen({ScreenIdx, _ScreenMod}) ->
+    case lists:keyfind(ScreenIdx + 1, 1, ?AVAILABLE_SCREENS) of
+        false -> default_screen();
+        ScreenInfo  -> ScreenInfo
+    end.

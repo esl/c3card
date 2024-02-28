@@ -1,15 +1,15 @@
 %%%-------------------------------------------------------------------
-%% @doc `c3card_screen_date' screen info.
+%% @doc `c3card_screen_demo' screen info.
 %% @end
 %%%-------------------------------------------------------------------
 
--module(c3card_screen_date).
+-module(c3card_screen_demo).
 
 -behaviour(c3card_screen).
 
--export([draw/1]).
+-export([draw/0]).
 
 %% Callbacks
 
-draw(_CardInfo) ->
-    {ok, "Hello date"}.
+draw() ->
+    {ok, io_lib:format("~n~n~nHello CodeBEAM!~n", [])}.

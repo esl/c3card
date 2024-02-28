@@ -7,9 +7,12 @@
 
 -behaviour(c3card_screen).
 
--export([draw/1]).
+-export([draw/0]).
 
 %% Callbacks
 
-draw(_CardInfo) ->
-    {ok, "Hello codebeam"}.
+draw() ->
+    CurrentTurn = c3card_codebeam:candy_turn(),
+    CandyInfo = io_lib:format("Get your candy!~n~nturn: ~p",
+                              [CurrentTurn]),
+    {ok, CandyInfo}.
