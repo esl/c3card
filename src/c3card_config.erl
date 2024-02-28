@@ -13,11 +13,11 @@
 -include("config.hrl").
 
 -export([read_config/0,
-	 store_config/1,
-	 reset_config/0]).
+         store_config/1,
+         reset_config/0]).
 
 -type config_option() ::
-	{c3card_buttons, c3card_buttons:config()}
+        {c3card_buttons, c3card_buttons:config()}
       | {c3card_neopixel, c3card_neopixel:config()}
       | {c3card_screen, c3card_screen:config()}
       | {c3card_comm, c3card_comm:config()}
@@ -39,11 +39,11 @@
 -spec read_config() -> config().
 read_config() ->
     case esp:nvs_get_binary(c3card, config) of
-	undefined ->
-	    default_config();
-	Config ->
-	    erlang:binary_to_term(Config)
-	end.
+        undefined ->
+            default_config();
+        Config ->
+            erlang:binary_to_term(Config)
+        end.
 
 %% @doc Store the configuration in the NVS
 -spec store_config(config()) -> ok | {error, Reason :: term()}.
@@ -74,6 +74,6 @@ default_config() ->
 		    {port, ?DEFAULT_GW_DATA_PORT}]},
      {c3card_sensor, [{sensors, ?DEFAULT_SENSORS}]},
      {c3card_wifi, [{ssid, ?DEFAULT_STA_SSID},
-		    {psk, ?DEFAULT_STA_PSK},
-		    {ntp, ?DEFAULT_NTP_HOST}]}
+                    {psk, ?DEFAULT_STA_PSK},
+                    {ntp, ?DEFAULT_NTP_HOST}]}
     ].

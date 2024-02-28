@@ -35,20 +35,20 @@ start(Config) ->
     Psk = proplists:get_value(psk, Config),
     NTPHost = proplists:get_value(ntp, Config),
     NetConfig =
-	[{sntp, [{host, NTPHost}, {synchronized, fun ntp_syncronized/1}]},
-	 {sta,
-	  [{connected, fun connected/0},
-	   {got_ip, fun got_ip/1},
-	   {disconnected, fun disconnected/0},
-	   {ssid, SSID},
-	   {psk, Psk}]}],
+        [{sntp, [{host, NTPHost},
+                 {synchronized, fun ntp_syncronized/1}]},
+         {sta, [{connected, fun connected/0},
+                {got_ip, fun got_ip/1},
+                {disconnected, fun disconnected/0},
+                {ssid, SSID},
+                {psk, Psk}]}],
     case network:start(NetConfig) of
-	{ok, _Pid} = Res ->
-	    timer:sleep(5_000),
-	    Res;
-	Error ->
-	    ?LOG_ERROR("an error happened: ~p", [Error]),
-	    Error
+        {ok, _Pid} = Res ->
+            timer:sleep(5_000),
+            Res;
+        Error ->
+            ?LOG_ERROR("an error happened: ~p", [Error]),
+            Error
     end.
 
 %% internal functions

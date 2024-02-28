@@ -15,13 +15,13 @@
 -behaviour(gen_server).
 
 -export([clear_all/0,
-	 toggle_led/1, toggle_led/2,
-	 start_link/1]).
+         toggle_led/1, toggle_led/2,
+         start_link/1]).
 
 -export([init/1,
-	 handle_call/3,
-	 handle_cast/2,
-	 handle_info/2]).
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2]).
 
 -define(SERVER, ?MODULE).
 
@@ -74,13 +74,13 @@ handle_call(clear_all, _From, #{neopixel := NeoPixel} = State) ->
     {reply, neopixel:clear(NeoPixel), State};
 handle_call({toggle_led, Led, Hue}, _From, #{neopixel := NeoPixel} = State) ->
     case neopixel:set_pixel_hsv(
-	   NeoPixel, Led, Hue,
-	   ?NEOPIXEL_SATURATION, ?NEOPIXEL_VALUE
-	  ) of
-	ok ->
-	    noop;
-	{error, Reason} ->
-	    ?LOG_ERROR("unable to set pixel hsv: ~p", [Reason])
+           NeoPixel, Led, Hue,
+           ?NEOPIXEL_SATURATION, ?NEOPIXEL_VALUE
+          ) of
+        ok ->
+            noop;
+        {error, Reason} ->
+            ?LOG_ERROR("unable to set pixel hsv: ~p", [Reason])
     end,
     {reply, neopixel:refresh(NeoPixel), State};
 handle_call(_Msg, _From, State) ->

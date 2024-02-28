@@ -10,6 +10,6 @@
 
 -callback handle_command(Command :: term()) ->
     {reply, Response :: term()}
-	| noreply
-	| {error, Reason :: term()}.
+        | noreply
+        | {error, Reason :: term()}.
 %% Handle decoded Erlang terms from the gateway

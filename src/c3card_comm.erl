@@ -15,12 +15,12 @@
 -behaviour(gen_server).
 
 -export([get_port/0,
-	 start_link/1]).
+         start_link/1]).
 
 -export([init/1,
-	 handle_call/3,
-	 handle_cast/2,
-	 handle_info/2]).
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2]).
 
 -define(SERVER, ?MODULE).
 
@@ -28,7 +28,7 @@
 %% Listening TCP port for remote command execution
 
 -type comms_option() ::
-	{port, comm_port()}
+        {port, comm_port()}
       | {handler, ModHandler :: atom()}
       | {backend, inet | socket}.
 %% Remote execution configuration options
@@ -59,12 +59,12 @@ init(Config) ->
     Backend = proplists:get_value(backend, Config),
     case gen_tcp:listen(Port, [{active, true}, {inet_backend, Backend}]) of
         {ok, Socket} ->
-	    spawn(fun() -> accept(Socket, Handler) end),
-	    {ok, #{socket => Socket,
-		   handler => Handler,
-		   port => Port}};
+            spawn(fun() -> accept(Socket, Handler) end),
+            {ok, #{socket => Socket,
+                   handler => Handler,
+                   port => Port}};
         Error ->
-	    {stop, Error}
+            {stop, Error}
     end.
 
 %% @private
@@ -85,41 +85,41 @@ handle_info(_Message, State) ->
 
 accept(ListeningSocket, Handler) ->
     case gen_tcp:accept(ListeningSocket) of
-	{ok, Socket} ->
-	    spawn(fun() -> accept(ListeningSocket, Handler) end),
-	    NewConn = spawn(fun() -> cmd_loop(Handler) end),
-	    ?LOG_NOTICE("accepting new connection: ~p", [Socket]),
-	    ok = gen_tcp:controlling_process(Socket, NewConn);
-	{error, Reason} -> Reason
+        {ok, Socket} ->
+            spawn(fun() -> accept(ListeningSocket, Handler) end),
+            NewConn = spawn(fun() -> cmd_loop(Handler) end),
+            ?LOG_NOTICE("accepting new connection: ~p", [Socket]),
+            ok = gen_tcp:controlling_process(Socket, NewConn);
+        {error, Reason} -> Reason
     end.
 
 cmd_loop(Handler) ->
     receive
-	{tcp_closed, _Socket} ->
-	    ?LOG_NOTICE("remote session closed"),
-	    ok;
-	{tcp_error, _Socket, Reason} ->
-	    ?LOG_ERROR("error for remote session: ~p", [Reason]),
-	    ok;
-	{tcp, Socket, Packet} ->
-	    try
-		Data = erlang:binary_to_term(erlang:iolist_to_binary(Packet)),
-		case Handler:handle_command(Data) of
-		    {reply, Reply} ->
-			Payload = erlang:term_to_binary(Reply),
-			gen_tcp:send(Socket, Payload);
-		    noreply ->
-			Payload = erlang:term_to_binary(noreply),
-			gen_tcp:send(Socket, Payload);
-		    {error, _Reason} = Err ->
-			Payload = erlang:term_to_binary(Err),
-			gen_tcp:send(Socket, Payload)
-		    end,
-		cmd_loop(Handler)
-	    catch _:_:_ ->
-		    ?LOG_ERROR("exception while handling remote connection"),
-		    ok
-	    end;
-	_ ->
-	    ok
-	end.
+        {tcp_closed, _Socket} ->
+            ?LOG_NOTICE("remote session closed"),
+            ok;
+        {tcp_error, _Socket, Reason} ->
+            ?LOG_ERROR("error for remote session: ~p", [Reason]),
+            ok;
+        {tcp, Socket, Packet} ->
+            try
+                Data = erlang:binary_to_term(erlang:iolist_to_binary(Packet)),
+                case Handler:handle_command(Data) of
+                    {reply, Reply} ->
+                        Payload = erlang:term_to_binary(Reply),
+                        gen_tcp:send(Socket, Payload);
+                    noreply ->
+                        Payload = erlang:term_to_binary(noreply),
+                        gen_tcp:send(Socket, Payload);
+                    {error, _Reason} = Err ->
+                        Payload = erlang:term_to_binary(Err),
+                        gen_tcp:send(Socket, Payload)
+                    end,
+                cmd_loop(Handler)
+            catch _:_:_ ->
+                    ?LOG_ERROR("exception while handling remote connection"),
+                    ok
+            end;
+        _ ->
+            ok
+        end.

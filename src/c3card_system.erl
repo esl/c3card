@@ -8,11 +8,11 @@
 -export([info/0]).
 
 -type info_map() ::
-	#{atom_count => non_neg_integer(),
-	  process_count => non_neg_integer(),
-	  port_count => non_neg_integer(),
-	  word_size => non_neg_integer(),
-	  system_architecture => string()}. %% System information map
+        #{atom_count => non_neg_integer(),
+          process_count => non_neg_integer(),
+          port_count => non_neg_integer(),
+          word_size => non_neg_integer(),
+          system_architecture => string()}. %% System information map
 
 -export_type([info_map/0]).
 

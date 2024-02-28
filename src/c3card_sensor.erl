@@ -36,8 +36,8 @@
 %% Reading type
 
 -type reading() ::
-	#{type => reading_type(),
-	  data => float()}
+        #{type => reading_type(),
+          data => float()}
       | #{error => Error :: term()}.
 %% Reading format
 

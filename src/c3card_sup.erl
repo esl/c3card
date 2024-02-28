@@ -31,8 +31,8 @@ start_link() ->
 init([]) ->
     Config = c3card_config:read_config(),
     I2CBusConfig = #{sda => ?DEFAULT_SDA_PIN,
-		     scl => ?DEFAULT_SCL_PIN,
-		     peripheral => <<"i2c0">>},
+                     scl => ?DEFAULT_SCL_PIN,
+                     peripheral => <<"i2c0">>},
 
     {ok, I2CBus} = i2c_bus:start_link(I2CBusConfig),
 
