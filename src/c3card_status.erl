@@ -1,5 +1,14 @@
 %%%-------------------------------------------------------------------
 %% @doc `c3card_status' reporter server.
+%%
+%% This server periodically reports the current card status to the
+%% gateway via TCP.
+%%
+%% The card status is a map with the following keys:
+%% <pre>
+%%  #{readings => Readings,
+%%    system_info => c3card_system:info(),
+%%    control => c3card_comm:get_port()}</pre>
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -55,7 +64,6 @@ handle_info(_Message, State) ->
 card_status() ->
     {ok, Readings} = c3card_sensor:read_sensors(),
     #{readings => Readings,
-      platform => esp32c3,
       system_info => c3card_system:info(),
       control => c3card_comm:get_port()}.
 

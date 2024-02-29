@@ -1,5 +1,7 @@
 %%%-------------------------------------------------------------------
 %% @doc `c3card_screen_demo' screen info.
+%%
+%% A screen for demo purposes.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -11,5 +13,6 @@
 
 %% Callbacks
 
+%% @private
 draw() ->
     {ok, io_lib:format("~n~n~nHello CodeBEAM!~n", [])}.

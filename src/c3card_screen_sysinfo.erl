@@ -1,5 +1,8 @@
 %%%-------------------------------------------------------------------
 %% @doc `c3card_screen_sysinfo' screen info.
+%%
+%% This is the main screen for the `c3card'. It displays the current
+%% AHT20 sensor readings, current process count and the system date.
 %% @end
 %%%-------------------------------------------------------------------
 
@@ -11,6 +14,7 @@
 
 %% Callbacks
 
+%% @private
 draw() ->
     {ok, #{aht20 := [
                      #{data := Hum, type := humidity},
@@ -22,7 +26,7 @@ draw() ->
     CurrentTurn = c3card_codebeam:candy_turn(),
     SysInfo =
         io_lib:format(
-          "AHT10:~n  ~pC, ~p%, ~pRH~nprocesses: ~p~nturn: ~p~ndate: ~p/~p/~p",
+          "AHT20:~n  ~pC, ~p%, ~pRH~nprocesses: ~p~nturn: ~p~ndate: ~p/~p/~p",
           [trunc(Temp), trunc(Hum), trunc(RelHum),
            ProcessCount, CurrentTurn, Year, Month, Day]
          ),

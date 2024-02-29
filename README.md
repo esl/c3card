@@ -58,7 +58,7 @@ And the default IO pinouts are mapped as:
   - IO3: I2C SCL
   - IO4: WS2812 LED
   - IO5: Button 1
-  - IO6: Button 2
+  - IO9: Button 2
   - IO7: Button 3
   - IO8: Button 4
   - IO10 - OLED Reset

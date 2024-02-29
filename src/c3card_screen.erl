@@ -11,6 +11,17 @@
 %% href="https://github.com/atomvm/atomvm_lib">atomvm_lib</a> for
 %% sharing access to the I²C interface provided by the ESP32C3
 %% microcontroller.
+%%
+%% There are currently 3 screens supported by default:
+%%
+%% <ul>
+%%   <li>`c3card_screen_sysinfo'</li>
+%%   <li>`c3card_screen_codebeam'</li>
+%%   <li>`c3card_screen_demo'</li>
+%% </ul>
+%%
+%% They should provide an starting point for developing your own
+%% custom screens.
 %% @end
 %%%-------------------------------------------------------------------
 
