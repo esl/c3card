@@ -46,9 +46,9 @@ The overall list of components is the following:
 
   - SSD1306 OLED display
   - 4 buttons
-  - WS2812 Neoplixel LED array
+  - WS2812 Neopixel LED array
   - AHT20 sensor
-  - 1 I2Q Qwiic connector
+  - 1 I2C Qwiic connector
 
 And the default IO pinouts are mapped as:
 
@@ -61,7 +61,7 @@ And the default IO pinouts are mapped as:
   - IO9: Button 2
   - IO7: Button 3
   - IO8: Button 4
-  - IO10 - OLED Reset
+  - IO10: OLED Reset
 
 ## Firmware Overview
 
