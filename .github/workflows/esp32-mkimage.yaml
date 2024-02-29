@@ -30,12 +30,12 @@ jobs:
     strategy:
       matrix:
         idf-version: ["5.2"]
-        cc: ["clang-10"]
-        cxx: ["clang++-10"]
+        cc: ["clang-15"]
+        cxx: ["clang++-15"]
         cflags: ["-O3"]
         otp: ["26"]
         elixir_version: ["1.16"]
-        compiler_pkgs: ["clang-10"]
+        compiler_pkgs: ["clang-15"]
         soc: ["esp32c3"]
 
     env:
@@ -43,7 +43,7 @@ jobs:
       CXX: ${{ matrix.cxx }}
       CFLAGS: ${{ matrix.cflags }}
       CXXFLAGS: ${{ matrix.cflags }}
-      ImageOS: "ubuntu20"
+      ImageOS: "ubuntu-latest"
 
     steps:
     - name: Checkout repo
