@@ -94,7 +94,8 @@ handle_call(read_sensors, _From, #{sensors := Sensors} = State) ->
                                      {error, Reason} -> {Mod, Reason}
                                  end
                          end, Sensors),
-    Readings = maps:map(fun deaggregate_reading/2, maps:from_list(Readings0)),
+    Readings =
+        maps:map(fun deaggregate_reading/2, maps:from_list(Readings0)),
     {reply, {ok, Readings}, State};
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
@@ -120,6 +121,12 @@ deaggregate_reading(aht20, {Hum, Temp, RH}) ->
      #{type => humidity, data => Hum},
      #{type => relative_humidity, data => RH},
      #{type => temperature, data => Temp}
+    ];
+deaggregate_reading(scd40, {CO2, Temp, Hum}) ->
+    [
+     #{type => co2, data => CO2},
+     #{type => temperature, data => Temp},
+     #{type => humidity, data => Hum}
     ];
 deaggregate_reading(Sensor, Error) ->
     [#{sensor => Sensor, error => Error}].
