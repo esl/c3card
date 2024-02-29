@@ -16,7 +16,7 @@
 %%
 %% <ul>
 %%   <li>`c3card_screen_sysinfo'</li>
-%%   <li>`c3card_screen_codebeam'</li>
+%%   <li>`c3card_screen_workshop'</li>
 %%   <li>`c3card_screen_demo'</li>
 %% </ul>
 %%
@@ -50,7 +50,7 @@
 
 -define(DEFAULT_SCREEN, {1, c3card_screen_sysinfo}).
 -define(AVAILABLE_SCREENS, [{1, c3card_screen_sysinfo},
-                            {2, c3card_screen_codebeam},
+                            {2, c3card_screen_workshop},
                             {3, c3card_screen_demo}]).
 
 -callback draw() -> {ok, Text :: binary()} | {error, Reason :: term()}.

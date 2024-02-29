@@ -23,7 +23,7 @@ draw() ->
                     ]}} = c3card_sensor:read_sensors(),
     #{process_count := ProcessCount} = c3card_system:info(),
     {{Year, Month, Day}, _} = erlang:universaltime(),
-    CurrentTurn = c3card_codebeam:candy_turn(),
+    CurrentTurn = c3card_workshop:candy_turn(),
     SysInfo =
         io_lib:format(
           "AHT20:~n  ~pC, ~p%, ~pRH~nprocesses: ~p~nturn: ~p~ndate: ~p/~p/~p",

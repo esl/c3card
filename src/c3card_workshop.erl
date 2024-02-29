@@ -1,8 +1,8 @@
 %%%-------------------------------------------------------------------
-%% @doc CodeBEAM helper server.
+%% @doc CodeBEAM workshop helpers.
 %% @end
 %%%-------------------------------------------------------------------
--module(c3card_codebeam).
+-module(c3card_workshop).
 
 -include_lib("kernel/include/logger.hrl").
 
@@ -21,7 +21,7 @@
 -define(SERVER, ?MODULE).
 
 -type config() :: [].
-%% Default configuration for `c3card_codebeam'
+%% Default configuration for `c3card_workshop'
 
 -export_type([config/0]).
 
@@ -42,7 +42,7 @@ set_turn(Turn) when is_integer(Turn) ->
 candy_turn() ->
     gen_server:call(?SERVER, candy_turn).
 
-%% @doc Start and link CodeBEAM helper server
+%% @doc Start and link CodeBEAM workshop helper server
 -spec start_link(Config :: config()) -> gen_server:start_ret().
 start_link(Config) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Config, []).
@@ -51,7 +51,7 @@ start_link(Config) ->
 
 %% @private
 init(_Config) ->
-    ?LOG_NOTICE("starting CodeBEAM helpers"),
+    ?LOG_NOTICE("starting CodeBEAM workshop helpers"),
     {ok, #{turn => none}}.
 
 %% @private

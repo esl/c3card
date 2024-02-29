@@ -46,6 +46,6 @@ handle_buttons(#{1 := low}) ->
 handle_buttons(#{4 := low}) ->
     c3card_gateway:reconnect();
 handle_buttons(#{2 := low}) ->
-    c3card_codebeam:request_candy();
+    c3card_workshop:request_candy();
 handle_buttons(_Buttons) ->
     ok.

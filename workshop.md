@@ -68,7 +68,7 @@ application will start with the following components enabled:
 
   - `c3card_status`: Reports the card status and readings to the gateway.
 
-  - `c3card_codebeam`: CodeBEAM helpers.
+  - `c3card_workshop`: CodeBEAM workshop helpers.
 
   - `c3card_neopixel`: Controls the built-in Neopixel array.
 
@@ -110,7 +110,7 @@ graph TD
   A --> F[c3card_sensor]
   A --> G[c3card_buttons]
   A --> H[c3card_status]
-  A --> I[c3card_codebeam]
+  A --> I[c3card_workshop]
 
   F --> F1[aht20]
 ```
@@ -158,7 +158,7 @@ LED 1 turns **red** whenever a screen transition occurs.
 The system currently supports three default screens, each serving a
 distinct purpose:
 
-  - `c3card_screen_codebeam`: This screen is designed to provide
+  - `c3card_screen_workshop`: This screen is designed to provide
     assistance with the CodeBEAM workshop. At the moment, it is set up
     to display your position in the queue if you have requested a
     candy.

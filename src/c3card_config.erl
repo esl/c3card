@@ -66,7 +66,7 @@ default_config() ->
      {c3card_buttons, []},
      {c3card_neopixel, []},
      {c3card_screen, []},
-     {c3card_codebeam, []},
+     {c3card_workshop, []},
      {c3card_status, []},
      {c3card_comm, [{handler, ?DEFAULT_GW_HANDLER},
                     {backend, ?DEFAULT_INET_BACKEND},
