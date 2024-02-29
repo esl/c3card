@@ -21,9 +21,9 @@
 -export([start_link/1]).
 
 -export([init/1,
-	 handle_call/3,
-	 handle_cast/2,
-	 handle_info/2]).
+         handle_call/3,
+         handle_cast/2,
+         handle_info/2]).
 
 -define(SERVER, ?MODULE).
 
@@ -71,11 +71,11 @@ card_status() ->
 maybe_send_info(CardInfo) ->
     case c3card_gateway:send_data(CardInfo) of
         ok ->
-	    c3card_neopixel:toggle_led(2, 200);
+            c3card_neopixel:toggle_led(2, 200);
         {error, offline} ->
             c3card_neopixel:toggle_led(2, 50);
         Error ->
-	    c3card_neopixel:toggle_led(2, 350),
+            c3card_neopixel:toggle_led(2, 350),
             ?LOG_ERROR("error sending data: ~p", [Error])
     end,
     c3card_neopixel:clear_all().
