@@ -31,11 +31,14 @@ handle_command({neopixel, {on, Led}}) ->
     noreply;
 handle_command({candy, Turn}) ->
     spawn(fun() ->
-                  c3card_codebeam:set_turn(Turn),
-                  c3card_screen:clear()
+                  c3card_workshop:set_turn(Turn)
           end),
     noreply;
 handle_command(ping) ->
+    spawn(fun() ->
+		  c3card_neopixel:toggle_led(1, 120),
+		  c3card_neopixel:clear_all()
+	  end),
     {reply, pong};
 handle_command(Command) ->
     io:format("unknown command from gateway: ~p~n", [Command]),
