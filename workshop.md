@@ -28,9 +28,11 @@ before starting:
 And in case you also want to compile your own
 [AtomVM](https://atomvm.net) binary, you must also have:
 
-  - **Expressif IDF**: v5.2 of the IDF-SDK must be installed. Please
+  - **Expressif IDF**: v5.1.3 of the IDF-SDK must be installed. Please
     refer to [their download and installation
-    instructions](https://docs.espressif.com/projects/esp-idf/en/v5.2/esp32/get-started/index.html)
+    instructions](https://docs.espressif.com/projects/esp-idf/en/v5.1.3/esp32/get-started/index.html). It
+    is also ok to use version `v5.2` however, the officially supported
+    one is `v5.1.x`.
 
   - **AtomVM**: Latest `main` branch is ok to use. Follow the
     installation instructions at [the AtomVM
