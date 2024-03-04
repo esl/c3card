@@ -43,9 +43,11 @@ handle_buttons(#{1 := low}) ->
     c3card_neopixel:toggle_led(0, 350),
     c3card_neopixel:clear_all(),
     c3card_screen:next_screen();
-handle_buttons(#{4 := low}) ->
-    c3card_gateway:reconnect();
 handle_buttons(#{2 := low}) ->
     c3card_workshop:request_candy();
+handle_buttons(#{3 := low}) ->
+    c3card_workshop:set_turn(undefined);
+handle_buttons(#{4 := low}) ->
+    c3card_gateway:reconnect();
 handle_buttons(_Buttons) ->
     ok.
