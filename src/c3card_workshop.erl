@@ -33,12 +33,12 @@ request_candy() ->
     gen_server:call(?SERVER, request_candy).
 
 %% @doc Set the current candy turn
--spec set_turn(Turn :: non_neg_integer()) -> ok | {error, Reason :: term()}.
-set_turn(Turn) when is_integer(Turn) ->
+-spec set_turn(Turn :: atom()) -> ok | {error, Reason :: term()}.
+set_turn(Turn) when is_atom(Turn) ->
     gen_server:call(?SERVER, {set_turn, Turn}).
 
 %% @doc Get the current candy turn
--spec candy_turn() -> non_neg_integer() | none | requested.
+-spec candy_turn() -> atom().
 candy_turn() ->
     gen_server:call(?SERVER, candy_turn).
 
@@ -52,12 +52,14 @@ start_link(Config) ->
 %% @private
 init(_Config) ->
     ?LOG_NOTICE("starting CodeBEAM workshop helpers"),
-    {ok, #{turn => none}}.
+    {ok, #{turn => undefined}}.
 
 %% @private
+handle_call(request_candy, _From, #{turn := requested} = State) ->
+    {reply, ok, State};
 handle_call(request_candy, _From, State) ->
     Resp = c3card_gateway:send_data(#{command => request_candy}),
-    ?LOG_INFO("requesting candy: ~p", [Resp]),
+    ?LOG_NOTICE("requesting candy: ~p", [Resp]),
     {reply, Resp, State#{turn => requested}};
 handle_call({set_turn, Turn}, _From, State) ->
     {reply, ok, State#{turn => Turn}};
