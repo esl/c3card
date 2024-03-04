@@ -18,7 +18,9 @@
 
 -behaviour(gen_server).
 
--export([start_link/1]).
+-export([set_ip/1,
+         get_ip/0,
+         start_link/1]).
 
 -export([init/1,
          handle_call/3,
@@ -28,6 +30,12 @@
 -define(SERVER, ?MODULE).
 
 %% API
+
+set_ip(IP) ->
+    gen_server:cast(?SERVER, {set_ip, IP}).
+
+get_ip() ->
+    gen_server:call(?SERVER, get_ip).
 
 %% @doc Start and link the card status reporter
 -spec start_link(Config :: term()) -> gen_server:start_ret().
@@ -40,13 +48,17 @@ start_link(Config) ->
 init(_Config) ->
     Timer = timer_manager:send_after(1_000, self(), report),
     ?LOG_NOTICE("starting status reporter..."),
-    {ok, #{timer => Timer}}.
+    {ok, #{timer => Timer, ip => undefined}}.
 
 %% @private
+handle_call(get_ip, _From, State) ->
+    {reply, maps:get(ip, State), State};
 handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 
 %% @private
+handle_cast({set_ip, IP}, State) ->
+    {noreply, State#{ip => IP}};
 handle_cast(_Message, State) ->
     {noreply, State}.
 

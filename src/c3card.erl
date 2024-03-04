@@ -18,13 +18,14 @@
 %% that will loop forever taking the device readings and dispatching
 %% them to the gateway.
 start() ->
-    Config = c3card_config:reset_config(),
+    Config = c3card_config:read_config(),
     WiFiConfig = proplists:get_value(c3card_wifi, Config),
 
     {ok, _} = logger_manager:start_link(#{}),
-    {ok, _} = c3card_wifi:start(WiFiConfig),
+    {ok, {IP, _, _}} = c3card_wifi:start(WiFiConfig),
     {ok, _} = c3card_app:start(normal, []),
 
+    c3card_status:set_ip(IP),
     ?LOG_NOTICE("entering loop..."),
     loop(#{sleep_ms => 50}).
 

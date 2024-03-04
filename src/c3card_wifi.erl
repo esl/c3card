@@ -31,6 +31,7 @@
 %% @end
 -spec start(Config :: config()) -> {ok, WiFi :: pid()} | {error, Reason :: term()}.
 start(Config) ->
+    Parent = self(),
     SSID = proplists:get_value(ssid, Config),
     Psk = proplists:get_value(psk, Config),
     NTPHost = proplists:get_value(ntp, Config),
@@ -38,14 +39,18 @@ start(Config) ->
         [{sntp, [{host, NTPHost},
                  {synchronized, fun ntp_syncronized/1}]},
          {sta, [{connected, fun connected/0},
-                {got_ip, fun got_ip/1},
+                {got_ip, fun(IpInfo) ->
+				 got_ip(IpInfo),
+				 Parent ! {ip, IpInfo}
+			 end},
                 {disconnected, fun disconnected/0},
                 {ssid, SSID},
                 {psk, Psk}]}],
     case network:start(NetConfig) of
-        {ok, _Pid} = Res ->
-            timer:sleep(5_000),
-            Res;
+        {ok, _Pid} ->
+	    receive
+		{ip, IpInfo} -> {ok, IpInfo}
+	    end;
         Error ->
             ?LOG_ERROR("an error happened: ~p", [Error]),
             Error
@@ -53,14 +58,14 @@ start(Config) ->
 
 %% internal functions
 
-got_ip(IpInfo) ->
-    ?LOG_NOTICE("IP: ~p", [IpInfo]).
+got_ip({IP, _Netmask, _Gateway}) ->
+    ?LOG_NOTICE("STA IP: ~p", [IP]).
 
 connected() ->
-    ?LOG_NOTICE("fully connected", []).
+    ?LOG_NOTICE("WiFi connected", []).
 
 disconnected() ->
-    ?LOG_WARNING("disconnected", []).
+    ?LOG_WARNING("WiFi disconnected", []).
 
-ntp_syncronized(_Timeval) ->
-    ?LOG_NOTICE("NTP syncronized", []).
+ntp_syncronized({TVSec, TVUsec}) ->
+    ?LOG_NOTICE("NTP syncronized: TVSec=~p TVUsec=~p~n", [TVSec, TVUsec]).
