@@ -38,7 +38,7 @@
 %% @doc Reconnect to the gateway
 -spec reconnect() -> ok | offline.
 reconnect() ->
-    gen_server:call(?SERVER, reconnect).
+    gen_server:cast(?SERVER, reconnect).
 
 %% @doc Send any Erlang term to the gateway
 -spec send_data(Data :: term()) -> ok | {error, Reason :: term()}.
@@ -62,10 +62,6 @@ init(Config) ->
            port => Port}}.
 
 %% @private
-handle_call(reconnect, _From, State) ->
-    #{host := Host, port := Port} = State,
-    Socket = try_connect(Host, Port),
-    {reply, Socket, State#{socket => Socket}};
 handle_call({send_data, _Data}, _From, #{socket := offline} = State) ->
     {reply, {error, offline}, State};
 handle_call({send_data, Data}, _From, #{socket := Socket} = State) ->
@@ -75,6 +71,10 @@ handle_call(_Message, _From, State) ->
     {reply, ok, State}.
 
 %% @private
+handle_cast(reconnect, State) ->
+    #{host := Host, port := Port} = State,
+    Socket = try_connect(Host, Port),
+    {noreply, State#{socket => Socket}};
 handle_cast(_Message, State) ->
     {noreply, State}.
 
