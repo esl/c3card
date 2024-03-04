@@ -36,9 +36,9 @@ handle_command({candy, Turn}) ->
     noreply;
 handle_command(ping) ->
     spawn(fun() ->
-		  c3card_neopixel:toggle_led(1, 120),
-		  c3card_neopixel:clear_all()
-	  end),
+                  c3card_neopixel:toggle_led(1, 120),
+                  c3card_neopixel:clear_all()
+          end),
     {reply, pong};
 handle_command(Command) ->
     io:format("unknown command from gateway: ~p~n", [Command]),

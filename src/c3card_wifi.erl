@@ -40,17 +40,17 @@ start(Config) ->
                  {synchronized, fun ntp_syncronized/1}]},
          {sta, [{connected, fun connected/0},
                 {got_ip, fun(IpInfo) ->
-				 got_ip(IpInfo),
-				 Parent ! {ip, IpInfo}
-			 end},
+                                 got_ip(IpInfo),
+                                 Parent ! {ip, IpInfo}
+                         end},
                 {disconnected, fun disconnected/0},
                 {ssid, SSID},
                 {psk, Psk}]}],
     case network:start(NetConfig) of
         {ok, _Pid} ->
-	    receive
-		{ip, IpInfo} -> {ok, IpInfo}
-	    end;
+            receive
+                {ip, IpInfo} -> {ok, IpInfo}
+            end;
         Error ->
             ?LOG_ERROR("an error happened: ~p", [Error]),
             Error
