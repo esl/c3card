@@ -21,7 +21,7 @@ draw() ->
                      #{data := Hum, type := humidity},
                      #{data := RelHum, type := relative_humidity},
                      #{data := Temp, type := temperature}
-                    ]}} = c3card_sensor:read_sensors(),
+                    ]}} = c3card_sensor:internal_sensor(),
     #{process_count := ProcessCount} = c3card_system:info(),
     {A, B, C, D} = c3card_status:get_ip(),
     {{Year, Month, Day}, _} = erlang:universaltime(),

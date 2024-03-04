@@ -23,6 +23,7 @@
 -behaviour(gen_server).
 
 -export([read_sensors/0,
+         internal_sensor/0,
          start_link/1]).
 
 -export([init/1,
@@ -38,10 +39,10 @@
 -type reading() ::
         #{type => reading_type(),
           data => float()}
-      | #{error => Error :: term()}.
+      | #{error => Error :: term(), sensor => SensorName :: atom()}.
 %% Reading format
 
--type readings() :: [reading()].
+-type readings() :: #{SensorName :: atom() => [reading()]}.
 %% Recorded readings
 
 -type sensors_option() ::
@@ -60,6 +61,11 @@
 -spec read_sensors() -> {ok, readings()} | {error, Reason :: term()}.
 read_sensors() ->
     gen_server:call(?SERVER, read_sensors).
+
+%% @doc Return internal (AHT20) sensor reading
+-spec internal_sensor() -> {ok, reading()} | {error, Reason :: term()}.
+internal_sensor() ->
+    gen_server:call(?SERVER, internal_sensor).
 
 %% @doc Start and link the sensor facility.
 %%
@@ -87,6 +93,11 @@ init(Config) ->
     {ok, #{i2c_bus => I2CBus, sensors => Sensors}}.
 
 %% @private
+handle_call(internal_sensor, _From, #{sensors := Sensors} = State) ->
+    Pid = proplists:get_value(aht20, Sensors),
+    {ok, Reading} = aht20:take_reading(Pid),
+    Reply = #{aht20 => deaggregate_reading(aht20, Reading)},
+    {reply, {ok, Reply}, State};
 handle_call(read_sensors, _From, #{sensors := Sensors} = State) ->
     Readings0 = lists:map(fun({Mod, Pid}) ->
                                  case Mod:take_reading(Pid) of
