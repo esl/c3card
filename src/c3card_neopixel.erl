@@ -29,7 +29,7 @@
 -define(NEOPIXEL_VALUE, 15).
 
 -define(NEOPIXEL_PIN, 4).
--define(NEOPIXEL_TOTAL_PIXELS, 3).
+-define(NEOPIXEL_TOTAL_PIXELS, 4).
 
 -type config() :: [].
 %% Default configuration for `c3card_neopixel'

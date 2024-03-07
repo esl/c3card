@@ -33,12 +33,9 @@
 
 -define(SERVER, ?MODULE).
 
--type reading_type() :: humidity | relative_humidity | pressure | temperature.
-%% Reading type
-
 -type reading() ::
-        #{type => reading_type(),
-          data => float()}
+        #{type => atom(),
+          data => number()}
       | #{error => Error :: term(), sensor => SensorName :: atom()}.
 %% Reading format
 
