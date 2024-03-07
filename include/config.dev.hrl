@@ -5,4 +5,4 @@
 -define(DEFAULT_GW_DATA_PORT, 9999).
 -define(DEFAULT_GW_COMM_PORT, 9998).
 -define(DEFAULT_GW_HANDLER, c3card_gateway_command).
--define(DEFAULT_SENSORS, [{aht20, start_link, []}, {bme280, start, [{address, 16#77}]}]).
+-define(DEFAULT_SENSORS, [{aht20, start_link, []}]).
