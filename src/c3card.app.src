@@ -1,6 +1,6 @@
 {application, c3card,
  [{description, "C3 card reference application"},
-  {vsn, "0.1.0"},
+  {vsn, "0.1.1"},
   {registered, []},
   {mod, {c3card_app, []}},
   {applications,
