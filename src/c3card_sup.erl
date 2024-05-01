@@ -42,9 +42,6 @@ init([]) ->
          worker(c3card_buttons, Config, []),
          worker(c3card_neopixel, Config, []),
          worker(c3card_screen, Config, [{i2c_bus, I2CBus}]),
-         worker(c3card_gateway, Config, []),
-         worker(c3card_comm, Config, []),
-         worker(c3card_workshop, Config, []),
          worker(c3card_status, Config, [])
         ],
 
