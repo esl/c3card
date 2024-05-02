@@ -27,6 +27,8 @@
 
 -module(c3card_screen).
 
+-include("version.hrl").
+
 -include_lib("kernel/include/logger.hrl").
 
 -behaviour(gen_server).
@@ -148,7 +150,7 @@ handle_info(_Msg, State) ->
 
 %% @hidden
 draw_header() ->
-    Header = "c3card    v0.2.0",
+    Header = io_lib:format("c3card    ~s", [?TAG]),
     io_lib:format(?SCREEN_HEADER, [Header]).
 
 %% @hidden
