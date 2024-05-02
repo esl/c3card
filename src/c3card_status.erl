@@ -28,6 +28,7 @@
          handle_info/2]).
 
 -define(SERVER, ?MODULE).
+-define(SEND_EVERY, 15_000).
 
 %% API
 
@@ -46,7 +47,7 @@ start_link(Config) ->
 
 %% @private
 init(_Config) ->
-    Timer = timer_manager:send_after(5_000, self(), report),
+    Timer = timer_manager:send_after(?SEND_EVERY, self(), report),
     ?LOG_NOTICE("starting status reporter..."),
     {ok, #{timer => Timer, ip => undefined}}.
 
@@ -65,7 +66,7 @@ handle_cast(_Message, State) ->
 %% @private
 handle_info(report, State) ->
     maybe_send_info(card_status()),
-    Timer = timer_manager:send_after(5_000, self(), report),
+    Timer = timer_manager:send_after(?SEND_EVERY, self(), report),
     {noreply, State#{timer => Timer}};
 handle_info(_Message, State) ->
     {noreply, State}.

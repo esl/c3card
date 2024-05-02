@@ -16,7 +16,7 @@
 %% @end
 %%%-------------------------------------------------------------------
 
--module(c3card_sensor).
+-module(c3card_sensors).
 
 -include_lib("kernel/include/logger.hrl").
 
@@ -132,7 +132,7 @@ deaggregate_reading(aht20, {Hum, Temp, RH}) ->
     ];
 deaggregate_reading(scd40, {CO2, Temp, Hum}) ->
     [
-     #{type => co2, data => CO2},
+     #{type => carbon_dioxide, data => CO2},
      #{type => temperature, data => Temp},
      #{type => humidity, data => Hum}
     ];
