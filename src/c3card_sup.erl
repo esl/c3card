@@ -31,12 +31,13 @@ start_link(Config) ->
 init({Config, I2CBus}) ->
     ChildSpecs =
         [
-         worker(c3card_sensors, Config, [{i2c_bus, I2CBus}]),
-         worker(c3card_buttons, Config, []),
-         worker(c3card_neopixel, Config, []),
-         worker(c3card_screen, Config, [{i2c_bus, I2CBus}]),
-         worker(c3card_mqtt, Config, []),
-         worker(c3card_status, Config, [])
+            worker(c3card_battery, Config, []),
+            worker(c3card_sensors, Config, [{i2c_bus, I2CBus}]),
+            worker(c3card_buttons, Config, []),
+            worker(c3card_neopixel, Config, []),
+            worker(c3card_screen, Config, [{i2c_bus, I2CBus}]),
+            worker(c3card_mqtt, Config, []),
+            worker(c3card_status, Config, [])
         ],
 
     SupFlags = {one_for_one, ?INTENSITY, ?PERIOD},
