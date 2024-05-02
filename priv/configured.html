@@ -1,79 +1,294 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>c3card configuration</title>
     <style>
-    <style>
       body {
-	  font-family: 'Arial', sans-serif;
-	  background-color: #FAFAFA;
-	  color: #333;
-	  margin: 0;
-	  padding: 0;
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
-	  height: 50vh;
+          font-family: "Arial", sans-serif;
+          background: rgb(250, 250, 250);
+          background: -moz-linear-gradient(
+              90deg,
+              rgba(250, 250, 250, 1) 0%,
+              rgba(250, 250, 250, 1) 50%,
+              rgba(195, 207, 226, 1) 100%
+          );
+          background: -webkit-linear-gradient(
+              90deg,
+              rgba(250, 250, 250, 1) 0%,
+              rgba(250, 250, 250, 1) 50%,
+              rgba(195, 207, 226, 1) 100%
+          );
+          background: linear-gradient(
+              90deg,
+              rgba(250, 250, 250, 1) 0%,
+              rgba(250, 250, 250, 1) 50%,
+              rgba(195, 207, 226, 1) 100%
+          );
       }
-      form {
-	  background-color: #FFF;
-	  padding: 20px;
-	  border-radius: 8px;
-	  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-	  width: 300px;
-      }
-      h1, h2 {
-	  color: #4A90E2;
-      }
+
       p {
-	  margin: 10px 0;
+          margin: 10px 0;
       }
-      label {
-        display: block;
-        margin-bottom: 3px;
-	margin-top: 6px;
-        font-weight: bold;
-      }
-      input[type='text'], input[type='password'] {
-	  width: 100%;
-	  padding: 8px;
-	  margin-top: 4px;
-	  box-sizing: border-box;
-	  border: 1px solid #ccc;
-	  border-radius: 4px;
-      }
-      input[type='submit'] {
-	  width: 100%;
-	  padding: 10px;
-	  background-color: #4A90E2;
-	  color: white;
-	  border: none;
-	  border-radius: 4px;
-	  cursor: pointer;
-	  margin-top: 10px;
-      }
-      input[type='submit']:hover {
-	  background-color: #357ABD;
-      }
+
       .info {
-	  font-size: 12px;
-	  color: #666;
-	  margin-top: : 5px;
+          font-size: 12px;
+          color: #666;
+          margin-top: 5px;
       }
-      @media (max-width: 600px) {
-        form {
-          width: 90%;
-          padding: 30px;
-        }
-        body {
-          padding: 16px;
-        }
+
+      .footer {
+          text-align: center;
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 2.5rem;
+          padding-bottom: 30px;
+      }
+
+      .header {
+          margin: 0 auto;
+          width: 5%;
+          padding-top: 40px;
+      }
+
+      svg {
+          fill: #7e7e7e;
+      }
+
+      .title {
+          text-align: center;
+          color: #0e3158;
+          font-size: 45px;
+      }
+
+      .instructions {
+          text-align: center;
+          padding-bottom: 20px;
+      }
+
+      @media only screen and (max-width: 500px) {
+          form {
+              margin: 50px 20px;
+          }
+
+          .header {
+              width: 20%;
+          }
       }
     </style>
   </head>
+  <script>
+    window.onload = () => {
+        let reboot = document.querySelector(".reboot");
+        let start_count = +reboot.innerText;
+
+        const updateCounter = () => {
+            if (start_count > 0) {
+                start_count = start_count - 1;
+                reboot.innerText = start_count;
+                setTimeout(updateCounter, 1000);
+            } else {
+                reboot.innerText = 0;
+                window.location.reload();
+            }
+        };
+
+        updateCounter();
+    };
+  </script>
   <body>
-    <div>
-      <p>Device has been provisioned, rebooting in 5 seconds</p>
+    <div class="header">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+        <g id="Reference">
+          <path
+            class="cls-1"
+            d="M39.56,42.7H10.44A3.15,3.15,0,0,1,7.3,39.56V10.45a3.14,3.14,0,0,1,3.14-3.13H39.56a3.14,3.14,0,0,1,3.14,3.13V39.56A3.15,3.15,0,0,1,39.56,42.7ZM10.44,9.32A1.13,1.13,0,0,0,9.3,10.45V39.56a1.14,1.14,0,0,0,1.14,1.14H39.56a1.14,1.14,0,0,0,1.14-1.14V10.45a1.13,1.13,0,0,0-1.14-1.13Z"
+            />
+          <rect
+            class="cls-1"
+            x="13.45"
+            y="3.03"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="18.73"
+            y="3.03"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="24"
+            y="3.03"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="29.27"
+            y="3.03"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="34.55"
+            y="3.03"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="13.45"
+            y="41.7"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="18.73"
+            y="41.7"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="24"
+            y="41.7"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="29.27"
+            y="41.7"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="34.55"
+            y="41.7"
+            width="2"
+            height="5.27"
+            />
+          <rect
+            class="cls-1"
+            x="3.03"
+            y="13.45"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="3.03"
+            y="18.73"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="3.03"
+            y="24"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="3.03"
+            y="29.27"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="3.03"
+            y="34.55"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="41.7"
+            y="13.45"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="41.7"
+            y="18.73"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="41.7"
+            y="24"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="41.7"
+            y="29.27"
+            width="5.27"
+            height="2"
+            />
+          <rect
+            class="cls-1"
+            x="41.7"
+            y="34.55"
+            width="5.27"
+            height="2"
+            />
+          <path
+            class="cls-1"
+            d="M34.67,35.67H15.33a1,1,0,0,1-1-1V15.33a1,1,0,0,1,1-1H34.67a1,1,0,0,1,1,1V34.67A1,1,0,0,1,34.67,35.67Zm-18.34-2H33.67V16.33H16.33Z"
+            />
+          <path
+            class="cls-1"
+            d="M21.48,25.12a3.64,3.64,0,1,1,3.64-3.64A3.64,3.64,0,0,1,21.48,25.12Zm0-5.27a1.64,1.64,0,1,0,1.64,1.63A1.63,1.63,0,0,0,21.48,19.85Z"
+            />
+          <rect
+            class="cls-1"
+            x="24.12"
+            y="20.48"
+            width="9.67"
+            height="2"
+            />
+          <path
+            class="cls-1"
+            d="M28.52,32.15a3.64,3.64,0,1,1,3.63-3.63A3.64,3.64,0,0,1,28.52,32.15Zm0-5.27a1.64,1.64,0,1,0,1.63,1.64A1.63,1.63,0,0,0,28.52,26.88Z"
+            />
+          <rect
+            class="cls-1"
+            x="16.21"
+            y="27.52"
+            width="10.55"
+            height="2"
+            />
+        </g>
+      </svg>
     </div>
+
+    <p class="title">c3card v0.2.0</p>
+
+    <div>
+      <p class="instructions">
+        <br />Device has been provisioned, rebooting in
+        <span class="reboot">6</span> seconds.
+      </p>
+    </div>
+
+    <footer class="footer">
+      <p class="info"><b>Erlang Solutions © 2024</b></p>
+      <p class="info">Proudly made with AtomVM ❤️</p>
+    </footer>
   </body>
 </html>
