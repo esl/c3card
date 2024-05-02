@@ -17,20 +17,34 @@
 
 %% @private
 draw() ->
-    {ok, #{aht20 := [
-                     #{data := Hum, type := humidity},
-                     #{data := RelHum, type := relative_humidity},
-                     #{data := Temp, type := temperature}
-                    ]}} = c3card_sensors:internal_sensor(),
+    {ok, #{
+        aht20 := [
+            #{data := Hum, type := humidity},
+            #{data := RelHum, type := relative_humidity},
+            #{data := Temp, type := temperature}
+        ]
+    }} = c3card_sensors:internal_sensor(),
     #{process_count := ProcessCount} = c3card_system:info(),
     {A, B, C, D} = c3card_status:get_ip(),
     {{Year, Month, Day}, _} = erlang:universaltime(),
 
     SysInfo =
-        io_lib:format(sysinfo_header(),
-          [trunc(Temp), trunc(Hum), trunc(RelHum),
-           A, B, C, D, ProcessCount, Year, Month, Day]
-         ),
+        io_lib:format(
+            sysinfo_header(),
+            [
+                trunc(Temp),
+                trunc(Hum),
+                trunc(RelHum),
+                A,
+                B,
+                C,
+                D,
+                ProcessCount,
+                Year,
+                Month,
+                Day
+            ]
+        ),
     {ok, SysInfo}.
 
 %% Internal functions

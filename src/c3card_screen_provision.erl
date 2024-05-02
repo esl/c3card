@@ -18,7 +18,8 @@ draw() ->
     DeviceName = erlang:binary_to_list(c3card_config:default_name()),
     Password = "password",
     ProvisionInfo =
-	io_lib:format("~nSSID: ~n~s~n~nPSK: ~s~nWeb: 192.168.4.1~n",
-		      [DeviceName, Password]
-		     ),
+        io_lib:format(
+            "~nSSID: ~n~s~n~nPSK: ~s~nWeb: 192.168.4.1~n",
+            [DeviceName, Password]
+        ),
     {ok, ProvisionInfo}.

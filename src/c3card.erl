@@ -21,45 +21,53 @@
 %% that will loop forever taking the device readings and dispatching
 %% them to the gateway.
 start() ->
-    I2CBusConfig = #{sda => ?DEFAULT_SDA_PIN,
-                     scl => ?DEFAULT_SCL_PIN,
-		     clock_speed_hz => 1_000_000,
-                     peripheral => <<"i2c0">>,
-                     use_nif => true},
+    I2CBusConfig = #{
+        sda => ?DEFAULT_SDA_PIN,
+        scl => ?DEFAULT_SCL_PIN,
+        clock_speed_hz => 1_000_000,
+        peripheral => <<"i2c0">>,
+        use_nif => true
+    },
 
     {ok, I2CBus} = i2c_bus:start_link(I2CBusConfig),
     {ok, _} = logger_manager:start_link(#{}),
 
     case c3card_config:read_config() of
         undefined ->
-	    ScreenOpts = [{i2c_bus, I2CBus},
-			  {screen, {2, c3card_screen_provision}}],
-	    {ok, _Pid} = c3card_screen:start_link(ScreenOpts),
-	    c3card_provision:start_provisioning(),
-	    ?LOG_NOTICE("starting initial provisioning..."),
-	    timer:sleep(infinity);
+            ScreenOpts = [
+                {i2c_bus, I2CBus},
+                {screen, {2, c3card_screen_provision}}
+            ],
+            {ok, _Pid} = c3card_screen:start_link(ScreenOpts),
+            c3card_provision:start_provisioning(),
+            ?LOG_NOTICE("starting initial provisioning..."),
+            timer:sleep(infinity);
         Config ->
-	    WiFiConfig = maps:get(c3card_wifi, Config),
-	    {ok, {IP, _, _}} = c3card_wifi:start(WiFiConfig),
-	    {ok, _} = c3card_app:start(normal, [{config, {Config, I2CBus}}]),
-	    c3card_status:set_ip(IP),
+            WiFiConfig = maps:get(c3card_wifi, Config),
+            {ok, {IP, _, _}} = c3card_wifi:start(WiFiConfig),
+            {ok, _} = c3card_app:start(normal, [{config, {Config, I2CBus}}]),
+            c3card_status:set_ip(IP),
 
-	    DeviceInfo = c3card_system:device_specs(),
+            DeviceInfo = c3card_system:device_specs(),
             DeviceModel = <<"c3card">>,
             DeviceName = c3card_config:get_name(),
             CardAttrs =
-                #{<<"platform">> => atomvm:platform(),
-                  <<"frequency">> => esp:freq_hz(),
-                  <<"mac">> => c3card_config:get_mac(),
-                  <<"firmware">> => <<"c3card">>,
-                  <<"version">> => <<"v1.0.0">>,
-                  <<"model">> => DeviceModel},
-            ProvisionInfo = #{name => DeviceName,
-                              info => DeviceInfo,
-                              attributes => CardAttrs},
+                #{
+                    <<"platform">> => atomvm:platform(),
+                    <<"frequency">> => esp:freq_hz(),
+                    <<"mac">> => c3card_config:get_mac(),
+                    <<"firmware">> => <<"c3card">>,
+                    <<"version">> => <<"v1.0.0">>,
+                    <<"model">> => DeviceModel
+                },
+            ProvisionInfo = #{
+                name => DeviceName,
+                info => DeviceInfo,
+                attributes => CardAttrs
+            },
             c3card_mqtt:publish(<<"provision">>, ProvisionInfo),
-	    ?LOG_NOTICE("entering loop..."),
-	    loop(#{sleep_ms => 100})
+            ?LOG_NOTICE("entering loop..."),
+            loop(#{sleep_ms => 100})
     end.
 
 %% Internal functions

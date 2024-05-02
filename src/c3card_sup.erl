@@ -46,5 +46,4 @@ init({Config, I2CBus}) ->
 
 worker(Mod, Config, Opts) ->
     Args = maps:to_list(maps:get(Mod, Config)),
-    {Mod, {Mod, start_link, [Args ++ Opts]},
-     permanent, brutal_kill, worker, [Mod]}.
+    {Mod, {Mod, start_link, [Args ++ Opts]}, permanent, brutal_kill, worker, [Mod]}.

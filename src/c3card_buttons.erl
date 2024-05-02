@@ -18,13 +18,17 @@
 
 -behaviour(gen_server).
 
--export([button_status/0,
-         start_link/1]).
+-export([
+    button_status/0,
+    start_link/1
+]).
 
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2
+]).
 
 -define(SERVER, ?MODULE).
 
@@ -38,10 +42,13 @@
 %% Default button status. `low' means the button is pressed
 
 -type button_status() ::
-        #{1 => button_state(),
-          2 => button_state(),
-          3 => button_state(),
-          4 => button_state()}. %% Button status map
+    #{
+        1 => button_state(),
+        2 => button_state(),
+        3 => button_state(),
+        %% Button status map
+        4 => button_state()
+    }.
 
 -type config() :: [{gpio, pid()}].
 %% Default configuration for `c3card_buttons'
@@ -65,20 +72,25 @@ start_link(Config) ->
 %% @private
 init(_Config) ->
     ?LOG_NOTICE("starting buttons: ~p", [?BUTTONS]),
-    lists:map(fun({_Label, Pin}) ->
-                      ok = gpio:set_pin_mode(Pin, input),
-                      ok = gpio:set_pin_pull(Pin, up)
-              end,
-              ?BUTTONS),
+    lists:map(
+        fun({_Label, Pin}) ->
+            ok = gpio:set_pin_mode(Pin, input),
+            ok = gpio:set_pin_pull(Pin, up)
+        end,
+        ?BUTTONS
+    ),
     {ok, #{}}.
 
 %% @private
 handle_call(button_status, _From, State) ->
     Status = maps:from_list(
-               lists:map(fun({Label, Pin}) ->
-                                 {Label, gpio:digital_read(Pin)}
-                         end,
-                         ?BUTTONS)),
+        lists:map(
+            fun({Label, Pin}) ->
+                {Label, gpio:digital_read(Pin)}
+            end,
+            ?BUTTONS
+        )
+    ),
     {reply, {ok, Status}, State};
 handle_call(_Message, _From, State) ->
     {reply, error, State}.

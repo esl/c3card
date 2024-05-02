@@ -31,14 +31,18 @@
 
 -behaviour(gen_server).
 
--export([draw_text/1, draw_text/2,
-         clear/0,
-         start_link/1]).
+-export([
+    draw_text/1, draw_text/2,
+    clear/0,
+    start_link/1
+]).
 
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2
+]).
 
 -define(SERVER, ?MODULE).
 
@@ -48,15 +52,17 @@
 -define(SCREEN_HEADER, "~s~n----------------~n").
 
 -define(DEFAULT_SCREEN, {1, c3card_screen_sysinfo}).
--define(AVAILABLE_SCREENS, [{1, c3card_screen_sysinfo},
-                            {2, c3card_screen_demo}]).
+-define(AVAILABLE_SCREENS, [
+    {1, c3card_screen_sysinfo},
+    {2, c3card_screen_demo}
+]).
 
 -callback draw() -> {ok, Text :: binary()} | {error, Reason :: term()}.
 
 -type screen_option() ::
-        {i2c_bus, i2c_bus:i2c_bus()}
-      | {screen, screen()}
-      | {gpio, pid()}.
+    {i2c_bus, i2c_bus:i2c_bus()}
+    | {screen, screen()}
+    | {gpio, pid()}.
 %% Screen configuration option
 
 -type config() :: [screen_option()].
@@ -95,10 +101,12 @@ start_link(Config) ->
 init(Config) ->
     I2CBus = proplists:get_value(i2c_bus, Config),
     Screen = proplists:get_value(screen, Config, ?DEFAULT_SCREEN),
-    SSDConfig = #{i2c_bus => I2CBus,
-                  address => ?SSD1306_ADDRESS,
-                  use_nif => false,
-                  reset_pin => ?SSD1306_RESET_PIN},
+    SSDConfig = #{
+        i2c_bus => I2CBus,
+        address => ?SSD1306_ADDRESS,
+        use_nif => false,
+        reset_pin => ?SSD1306_RESET_PIN
+    },
     {ok, SSD1306} = ssd1306:start(SSDConfig),
     ssd1306:clear(SSD1306),
     ssd1306:set_contrast(SSD1306, 255),
@@ -159,5 +167,5 @@ render_screen(Display, {_ScreenIdx, ScreenMod}) ->
 switch_screen({ScreenIdx, _ScreenMod}) ->
     case lists:keyfind(ScreenIdx + 1, 1, ?AVAILABLE_SCREENS) of
         false -> ?DEFAULT_SCREEN;
-        ScreenInfo  -> ScreenInfo
+        ScreenInfo -> ScreenInfo
     end.

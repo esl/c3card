@@ -18,14 +18,18 @@
 
 -behaviour(gen_server).
 
--export([set_ip/1,
-         get_ip/0,
-         start_link/1]).
+-export([
+    set_ip/1,
+    get_ip/0,
+    start_link/1
+]).
 
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2
+]).
 
 -define(SERVER, ?MODULE).
 -define(SEND_EVERY, 15_000).
@@ -76,9 +80,11 @@ handle_info(_Message, State) ->
 %% @hidden
 card_status() ->
     {ok, SensorsInfo} = c3card_sensors:read_sensors(),
-    #{sensors => SensorsInfo,
-      battery => c3card_battery:current_state(),
-      system_info => c3card_system:info()}.
+    #{
+        sensors => SensorsInfo,
+        battery => c3card_battery:current_state(),
+        system_info => c3card_system:info()
+    }.
 
 %% @hidden
 maybe_send_info(CardInfo) ->

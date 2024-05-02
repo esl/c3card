@@ -34,20 +34,20 @@
 ]).
 
 -type config_key() ::
-	c3card_buttons
-      | c3card_neopixel
-      | c3card_screen
-      | c3card_sensors
-      | c3card_battery
-      | c3card_wifi.
+    c3card_buttons
+    | c3card_neopixel
+    | c3card_screen
+    | c3card_sensors
+    | c3card_battery
+    | c3card_wifi.
 %% `c3card' configuration key
 
 -type config_map() ::
-        c3card_buttons:config()
-      | c3card_neopixel:config()
-      | c3card_screen:config()
-      | c3card_sensors:config()
-      | c3card_wifi:config().
+    c3card_buttons:config()
+    | c3card_neopixel:config()
+    | c3card_screen:config()
+    | c3card_sensors:config()
+    | c3card_wifi:config().
 %% `c3card' configuration option
 
 -type config() :: #{ConfigKey :: config_key() => ConfigValue :: config_map()}.
@@ -60,10 +60,10 @@
 read_config() ->
     case esp:nvs_get_binary(c3card, config) of
         undefined ->
-	    undefined;
+            undefined;
         Config ->
             erlang:binary_to_term(Config)
-        end.
+    end.
 
 %% @doc Store the configuration in the NVS
 -spec store_config(config()) -> ok | {error, Reason :: term()}.
@@ -115,24 +115,24 @@ read_provision_info() ->
 
 device_id() ->
     case read_provision_info() of
-	undefined ->
-	    undefined;
-	#{device_id := DeviceId} ->
-	    DeviceId
+        undefined ->
+            undefined;
+        #{device_id := DeviceId} ->
+            DeviceId
     end.
 
 %% internal functions
 
 default_config() ->
     #{
-      c3card_buttons => #{},
-      c3card_mqtt => #{handler => c3card_mqtt_handler},
-      c3card_neopixel => #{},
-      c3card_screen => #{screen => {1, c3card_screen_sysinfo}},
-      c3card_status => #{},
-      c3card_battery => #{},
-      c3card_sensors => #{sensors => ?DEFAULT_SENSORS},
-      c3card_wifi => #{ntp => ?DEFAULT_NTP_HOST}
+        c3card_buttons => #{},
+        c3card_mqtt => #{handler => c3card_mqtt_handler},
+        c3card_neopixel => #{},
+        c3card_screen => #{screen => {1, c3card_screen_sysinfo}},
+        c3card_status => #{},
+        c3card_battery => #{},
+        c3card_sensors => #{sensors => ?DEFAULT_SENSORS},
+        c3card_wifi => #{ntp => ?DEFAULT_NTP_HOST}
     }.
 
 default_name() ->
@@ -144,8 +144,8 @@ default_name() ->
 %% @hidden
 decode_mac(<<A:8, B:8, C:8, D:8, E:8, F:8>>, WithDots) ->
     erlang:iolist_to_binary(
-      io_lib:format(with_dots(WithDots), [A,B,C,D,E,F])
-     ).
+        io_lib:format(with_dots(WithDots), [A, B, C, D, E, F])
+    ).
 
 %% @hidden
 with_dots(true) ->

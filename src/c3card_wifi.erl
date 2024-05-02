@@ -13,9 +13,10 @@
 -export([start/1]).
 
 -type wifi_option() ::
-        {ssid, SSID :: binary()}
-      | {psk, PSK :: binary()}
-      | {ntp, Host :: string()}. %% WiFi configuration options
+    {ssid, SSID :: binary()}
+    | {psk, PSK :: binary()}
+    %% WiFi configuration options
+    | {ntp, Host :: string()}.
 
 -type config() :: [wifi_option()].
 %% Default configuration for `c3card_wifi'
@@ -31,19 +32,25 @@
 %% @end
 -spec start(Config :: config()) -> {ok, WiFi :: pid()} | {error, Reason :: term()}.
 start(Config) ->
-    #{ssid := SSID, psk := Psk, ntp := NTPHost} = Config,
+    #{ssid := SSID, psk := PSK, ntp := NTPHost} = Config,
     Parent = self(),
     NetConfig =
-        [{sntp, [{host, NTPHost},
-                 {synchronized, fun ntp_syncronized/1}]},
-         {sta, [{connected, fun connected/0},
+        [
+            {sntp, [
+                {host, NTPHost},
+                {synchronized, fun ntp_syncronized/1}
+            ]},
+            {sta, [
+                {connected, fun connected/0},
                 {got_ip, fun(IpInfo) ->
-                                 got_ip(IpInfo),
-                                 Parent ! {ip, IpInfo}
-                         end},
+                    got_ip(IpInfo),
+                    Parent ! {ip, IpInfo}
+                end},
                 {disconnected, fun disconnected/0},
                 {ssid, SSID},
-                {psk, Psk}]}],
+                {psk, PSK}
+            ]}
+        ],
     case network:start(NetConfig) of
         {ok, _Pid} ->
             receive

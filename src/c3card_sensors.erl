@@ -22,29 +22,35 @@
 
 -behaviour(gen_server).
 
--export([read_sensors/0,
-         internal_sensor/0,
-         start_link/1]).
+-export([
+    read_sensors/0,
+    internal_sensor/0,
+    start_link/1
+]).
 
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2]).
+-export([
+    init/1,
+    handle_call/3,
+    handle_cast/2,
+    handle_info/2
+]).
 
 -define(SERVER, ?MODULE).
 
 -type reading() ::
-        #{type => atom(),
-          data => number()}
-      | #{error => Error :: term(), sensor => SensorName :: atom()}.
+    #{
+        type => atom(),
+        data => number()
+    }
+    | #{error => Error :: term(), sensor => SensorName :: atom()}.
 %% Reading format
 
 -type readings() :: #{SensorName :: atom() => [reading()]}.
 %% Recorded readings
 
 -type sensors_option() ::
-        {i2c_bus, I2CBus :: i2c_bus:i2c_bus()}
-      | {sensors, [{Mod :: atom(), StartFun :: atom(), Args :: list()}]}.
+    {i2c_bus, I2CBus :: i2c_bus:i2c_bus()}
+    | {sensors, [{Mod :: atom(), StartFun :: atom(), Args :: list()}]}.
 %% Sensor server option
 
 -type config() :: [sensors_option()].
@@ -80,12 +86,15 @@ start_link(Config) ->
 %% @private
 init(Config) ->
     I2CBus = proplists:get_value(i2c_bus, Config),
-    Sensors = lists:map(fun({Mod, Fun, Args}) ->
-                                case Mod:Fun(I2CBus, Args) of
-                                    {ok, Pid} -> {Mod, Pid};
-                                    Error -> throw({stop, {c3card_sensors, Mod, Error}})
-                                end
-                        end, proplists:get_value(sensors, Config)),
+    Sensors = lists:map(
+        fun({Mod, Fun, Args}) ->
+            case Mod:Fun(I2CBus, Args) of
+                {ok, Pid} -> {Mod, Pid};
+                Error -> throw({stop, {c3card_sensors, Mod, Error}})
+            end
+        end,
+        proplists:get_value(sensors, Config)
+    ),
     ?LOG_NOTICE("starting sensors: ~p", [Sensors]),
     {ok, #{i2c_bus => I2CBus, sensors => Sensors}}.
 
@@ -96,12 +105,15 @@ handle_call(internal_sensor, _From, #{sensors := Sensors} = State) ->
     Reply = #{aht20 => deaggregate_reading(aht20, Reading)},
     {reply, {ok, Reply}, State};
 handle_call(read_sensors, _From, #{sensors := Sensors} = State) ->
-    Readings0 = lists:map(fun({Mod, Pid}) ->
-                                 case Mod:take_reading(Pid) of
-                                     {ok, Reading} -> {Mod, Reading};
-                                     {error, Reason} -> {Mod, Reason}
-                                 end
-                         end, Sensors),
+    Readings0 = lists:map(
+        fun({Mod, Pid}) ->
+            case Mod:take_reading(Pid) of
+                {ok, Reading} -> {Mod, Reading};
+                {error, Reason} -> {Mod, Reason}
+            end
+        end,
+        Sensors
+    ),
     Readings =
         maps:map(fun deaggregate_reading/2, maps:from_list(Readings0)),
     {reply, {ok, Readings}, State};
@@ -120,21 +132,21 @@ handle_info(_Message, State) ->
 
 deaggregate_reading(bme280, {Temp, Pressure, Hum}) ->
     [
-     #{type => humidity, data => Hum},
-     #{type => pressure, data => Pressure},
-     #{type => temperature, data => Temp}
+        #{type => humidity, data => Hum},
+        #{type => pressure, data => Pressure},
+        #{type => temperature, data => Temp}
     ];
 deaggregate_reading(aht20, {Hum, Temp, RH}) ->
     [
-     #{type => humidity, data => Hum},
-     #{type => relative_humidity, data => RH},
-     #{type => temperature, data => Temp}
+        #{type => humidity, data => Hum},
+        #{type => relative_humidity, data => RH},
+        #{type => temperature, data => Temp}
     ];
 deaggregate_reading(scd40, {CO2, Temp, Hum}) ->
     [
-     #{type => carbon_dioxide, data => CO2},
-     #{type => temperature, data => Temp},
-     #{type => humidity, data => Hum}
+        #{type => carbon_dioxide, data => CO2},
+        #{type => temperature, data => Temp},
+        #{type => humidity, data => Hum}
     ];
 deaggregate_reading(Sensor, Error) ->
     [#{sensor => Sensor, error => Error}].

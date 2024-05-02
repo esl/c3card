@@ -21,17 +21,20 @@ start_provisioning() ->
 %% Internal functions
 
 save_config(SubmittedConfig) ->
-    #{ssid := SSID,
-      pass := Pass,
-      gateway := Gateway,
-      mqtt_user := User,
-      mqtt_password := Password,
-      device_name := DeviceName
-     } = SubmittedConfig,
+    #{
+        ssid := SSID,
+        pass := Pass,
+        gateway := Gateway,
+        mqtt_user := User,
+        mqtt_password := Password,
+        device_name := DeviceName
+    } = SubmittedConfig,
 
-    MQTTOpts = #{host => Gateway,
-		 user => User,
-		 password => Password},
+    MQTTOpts = #{
+        host => Gateway,
+        user => User,
+        password => Password
+    },
     WiFiOpts = #{ssid => SSID, psk => Pass},
 
     Config0 = c3card_config:default_config(),
@@ -46,8 +49,8 @@ save_config(SubmittedConfig) ->
 
 get_net_config() ->
     [
-     {ssid, c3card_config:default_name()},
-     {psk, ?DEFAULT_AP_PSK}
+        {ssid, c3card_config:default_name()},
+        {psk, ?DEFAULT_AP_PSK}
     ].
 
 start_network() ->
@@ -65,8 +68,8 @@ start_network() ->
 start_web_server() ->
     Port = ?DEFAULT_WEB_SERVER_PORT,
     Router = [
-	      {"*", ?MODULE, []}
-	     ],
+        {"*", ?MODULE, []}
+    ],
     http_server:start_server(Port, Router),
     ?LOG_NOTICE("Web server listening on port ~p", [Port]).
 
@@ -85,20 +88,20 @@ handle_req("POST", [], Conn) ->
     DeviceName = proplists:get_value("device_name", Params),
 
     ok = save_config(
-	   #{
-	     ssid => SSID,
-	     pass => Pass,
-	     gateway => erlang:list_to_binary(Gateway),
-	     mqtt_user => erlang:list_to_binary(User),
-	     mqtt_password => erlang:list_to_binary(Password),
-	     device_name => erlang:list_to_binary(DeviceName)
-	    }
-	  ),
+        #{
+            ssid => SSID,
+            pass => Pass,
+            gateway => erlang:list_to_binary(Gateway),
+            mqtt_user => erlang:list_to_binary(User),
+            mqtt_password => erlang:list_to_binary(Password),
+            device_name => erlang:list_to_binary(DeviceName)
+        }
+    ),
 
     spawn(fun() ->
-		  timer:sleep(5_000),
-		  esp:restart()
-	  end),
+        timer:sleep(5_000),
+        esp:restart()
+    end),
 
     Body = configured_html(),
     http_server:reply(200, Body, Conn);

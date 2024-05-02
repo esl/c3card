@@ -1,20 +1,23 @@
-{application, c3card,
- [{description, "c3card reference application"},
-  {vsn, "0.2.0"},
-  {registered, []},
-  {mod, {c3card_app, []}},
-  {applications,
-   [kernel,
-    stdlib,
-    atomvm_lib,
-    aht20,
-    neopixel,
-    ssd1306
-   ]},
-  {env, []},
-  {modules, []},
+{application, c3card, [
+    {description, "c3card reference application"},
+    {vsn, "0.2.0"},
+    {registered, []},
+    {mod, {c3card_app, []}},
+    {applications, [
+        kernel,
+        stdlib,
+        atomvm_lib,
+        aht20,
+        scd40,
+        neopixel,
+        ssd1306,
+        atomvm_mqtt_client,
+        adc
+    ]},
+    {env, []},
+    {modules, []},
 
-  {maintainers, ["Ricardo Lanziano"]},
-  {licenses, ["Apache-2.0"]},
-  {links, []}
- ]}.
+    {maintainers, ["Ricardo Lanziano"]},
+    {licenses, ["Apache-2.0"]},
+    {links, []}
+]}.
