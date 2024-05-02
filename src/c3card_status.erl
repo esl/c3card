@@ -75,15 +75,15 @@ handle_info(_Message, State) ->
 
 %% @hidden
 card_status() ->
-    {ok, Readings} = c3card_sensor:read_sensors(),
-    #{readings => Readings,
-      system_info => c3card_system:info(),
-      control => c3card_comm:get_port()}.
+    {ok, SensorsInfo} = c3card_sensors:read_sensors(),
+    #{sensors => SensorsInfo,
+      battery => c3card_battery:current_state(),
+      system_info => c3card_system:info()}.
 
 %% @hidden
 maybe_send_info(CardInfo) ->
-    case c3card_gateway:send_data(CardInfo) of
-        ok ->
+    case c3card_mqtt:publish(<<"status">>, CardInfo) of
+        {ok, _MsgId} ->
             c3card_neopixel:toggle_led(2, 200);
         {error, offline} ->
             c3card_neopixel:toggle_led(2, 50);
