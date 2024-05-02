@@ -7,7 +7,7 @@
 
 -behaviour(supervisor).
 
--export([start_link/0]).
+-export([start_link/1]).
 
 -export([init/1]).
 
@@ -21,21 +21,14 @@
 
 %% API
 
--spec start_link() -> supervisor:startlink_ret().
-start_link() ->
-    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
+-spec start_link(Config :: c3card_config:config()) -> supervisor:startlink_ret().
+start_link(Config) ->
+    supervisor:start_link({local, ?SERVER}, ?MODULE, Config).
 
 %% supervisor callbacks
 
 %% @private
-init([]) ->
-    Config = c3card_config:read_config(),
-    I2CBusConfig = #{sda => ?DEFAULT_SDA_PIN,
-                     scl => ?DEFAULT_SCL_PIN,
-                     peripheral => <<"i2c0">>},
-
-    {ok, I2CBus} = i2c_bus:start_link(I2CBusConfig),
-
+init({Config, I2CBus}) ->
     ChildSpecs =
         [
          worker(c3card_sensors, Config, [{i2c_bus, I2CBus}]),
@@ -51,6 +44,6 @@ init([]) ->
 %% internal functions
 
 worker(Mod, Config, Opts) ->
-    Args = proplists:get_value(Mod, Config),
+    Args = maps:to_list(maps:get(Mod, Config)),
     {Mod, {Mod, start_link, [Args ++ Opts]},
      permanent, brutal_kill, worker, [Mod]}.

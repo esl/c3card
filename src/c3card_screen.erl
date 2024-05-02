@@ -33,7 +33,6 @@
 
 -export([draw_text/1, draw_text/2,
          clear/0,
-         next_screen/0,
          start_link/1]).
 
 -export([init/1,
@@ -46,17 +45,17 @@
 -define(SSD1306_ADDRESS, 16#3C).
 -define(SSD1306_RESET_PIN, 10).
 
--define(SCREEN_HEADER, "c3card on ~p~n---------------~n").
+-define(SCREEN_HEADER, "~s~n----------------~n").
 
 -define(DEFAULT_SCREEN, {1, c3card_screen_sysinfo}).
 -define(AVAILABLE_SCREENS, [{1, c3card_screen_sysinfo},
-                            {2, c3card_screen_workshop},
-                            {3, c3card_screen_demo}]).
+                            {2, c3card_screen_demo}]).
 
 -callback draw() -> {ok, Text :: binary()} | {error, Reason :: term()}.
 
 -type screen_option() ::
         {i2c_bus, i2c_bus:i2c_bus()}
+      | {screen, screen()}
       | {gpio, pid()}.
 %% Screen configuration option
 
@@ -69,11 +68,6 @@
 -export_type([config/0]).
 
 %% API
-
-%% @doc Switch to the next available screen
--spec next_screen() -> screen().
-next_screen() ->
-    gen_server:call(?SERVER, next_screen).
 
 %% @doc Draw a string on the OLED display
 -spec draw_text(Text :: bitstring()) -> ok | {error, Reason :: term()}.
@@ -100,6 +94,7 @@ start_link(Config) ->
 %% @private
 init(Config) ->
     I2CBus = proplists:get_value(i2c_bus, Config),
+    Screen = proplists:get_value(screen, Config, ?DEFAULT_SCREEN),
     SSDConfig = #{i2c_bus => I2CBus,
                   address => ?SSD1306_ADDRESS,
                   use_nif => false,
@@ -110,7 +105,7 @@ init(Config) ->
     ?LOG_NOTICE("display started"),
     ssd1306:set_text(SSD1306, draw_header()),
     _Timer = timer_manager:send_after(100, self(), redraw),
-    {ok, #{display => SSD1306, screen => ?DEFAULT_SCREEN}}.
+    {ok, #{display => SSD1306, screen => Screen}}.
 
 %% @private
 handle_call({draw_text, Text0, FormatOpts}, _From, #{display := SSD1306} = State) ->
@@ -145,7 +140,8 @@ handle_info(_Msg, State) ->
 
 %% @hidden
 draw_header() ->
-    io_lib:format(?SCREEN_HEADER, [atomvm:platform()]).
+    Header = "c3card    v0.2.0",
+    io_lib:format(?SCREEN_HEADER, [Header]).
 
 %% @hidden
 render_screen(Display, {_ScreenIdx, ScreenMod}) ->

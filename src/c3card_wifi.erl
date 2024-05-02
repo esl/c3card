@@ -31,10 +31,8 @@
 %% @end
 -spec start(Config :: config()) -> {ok, WiFi :: pid()} | {error, Reason :: term()}.
 start(Config) ->
+    #{ssid := SSID, psk := Psk, ntp := NTPHost} = Config,
     Parent = self(),
-    SSID = proplists:get_value(ssid, Config),
-    Psk = proplists:get_value(psk, Config),
-    NTPHost = proplists:get_value(ntp, Config),
     NetConfig =
         [{sntp, [{host, NTPHost},
                  {synchronized, fun ntp_syncronized/1}]},

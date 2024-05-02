@@ -13,8 +13,9 @@
 
 %% @doc Start the `c3card' application
 -spec start(StartType :: atom(), StartArgs :: []) -> application:start_type().
-start(_StartType, _StartArgs) ->
-    c3card_sup:start_link().
+start(_StartType, StartArgs) ->
+    Config = proplists:get_value(config, StartArgs),
+    c3card_sup:start_link(Config).
 
 %% @doc Stop the `c3card' application
 -spec stop(State :: term()) -> ok.
