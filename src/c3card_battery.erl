@@ -42,7 +42,7 @@ init(_Config) ->
         {pin, ?DEFAULT_VBATTERY_PIN},
         {bitwidth, bit_max},
         %% 0 mV ~ 2500 mV with ADC_11db
-        {atten, db_11}
+        {attenuation, db_11}
     ],
     ADC = adc:open(ADCOpts),
     ?LOG_NOTICE("starting battery status helper"),
@@ -50,7 +50,7 @@ init(_Config) ->
 
 handle_call(current_state, _From, State) ->
     #{adc := ADC} = State,
-    ReadingOpts = [{samples, ?SAMPLES}],
+    ReadingOpts = [{samples, ?SAMPLES}, {raw, true}, {voltage, true}],
     {ok, _BattRaw, BattVoltage} = adc:take_reading(ADC, ReadingOpts),
     Reply = #{
         voltage => BattVoltage,
