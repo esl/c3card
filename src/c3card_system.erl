@@ -32,7 +32,7 @@
 
 %% API
 
-%% @Doc return a map with available device specs
+%% @doc return a map with available device specs
 -spec device_specs() -> specs_map().
 device_specs() ->
     #{

@@ -5,8 +5,6 @@
 
 -module(c3card).
 
--include("version.hrl").
-
 -include_lib("kernel/include/logger.hrl").
 
 -define(DEFAULT_SDA_PIN, 2).
@@ -34,7 +32,9 @@ start() ->
     {ok, I2CBus} = i2c_bus:start_link(I2CBusConfig),
     {ok, _} = logger_manager:start_link(#{}),
 
-    ?LOG_NOTICE("starting c3card ~s", [?VERSION]),
+    #{version := Version} = c3card_config:version(),
+
+    ?LOG_NOTICE("starting c3card ~s", [Version]),
 
     case c3card_config:read_config() of
         undefined ->
@@ -61,7 +61,7 @@ start() ->
                     <<"frequency">> => esp:freq_hz(),
                     <<"mac">> => c3card_config:get_mac(),
                     <<"firmware">> => <<"c3card">>,
-                    <<"version">> => erlang:list_to_binary(?VERSION),
+                    <<"version">> => erlang:list_to_binary(Version),
                     <<"model">> => DeviceModel
                 },
             ProvisionInfo = #{

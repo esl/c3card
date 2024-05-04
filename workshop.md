@@ -79,7 +79,7 @@ application will start with the following components enabled:
     for such sensor).
 
 Since some of those components share common AtomVM facilities, such
-setup is done within `c3card_sup:start_link/0` before provisioning
+setup is done within `c3card_sup:start_link/1` before provisioning
 it's children.
 
 The primary loop within `c3card:start/0` will run continuously and

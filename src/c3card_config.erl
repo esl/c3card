@@ -10,6 +10,7 @@
 
 -module(c3card_config).
 
+-include("version.hrl").
 -include("config.hrl").
 
 -export([
@@ -18,6 +19,10 @@
     get_name/0,
     get_mac/0, get_mac/1,
     device_id/0
+]).
+
+-export([
+    version/0
 ]).
 
 -export([
@@ -54,6 +59,12 @@
 %% Configuration for `c3card'
 
 %% API
+
+version() ->
+    #{
+        version => ?VERSION,
+        tag => ?TAG
+    }.
 
 %% @doc Read the `c3card' configuration settings
 -spec read_config() -> config() | undefined.
