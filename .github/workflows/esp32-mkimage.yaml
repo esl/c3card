@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   esp32-release:
-    runs-on: ubuntu22
+    runs-on: ubuntu-latest
     container: espressif/idf:v${{ matrix.idf-version }}
 
     strategy:
