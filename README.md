@@ -1,5 +1,8 @@
 # C3Card
 
+[![Erlang/OTP Version](https://img.shields.io/badge/erlang%2Fotp-%2026-blue)](http://www.erlang.org)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://esl.github.io/c3card/)
+
 ![c3card](/images/c3card.jpg)
 
 A workshop at [CodeBEAM America 2024](https://codebeamamerica.com/)

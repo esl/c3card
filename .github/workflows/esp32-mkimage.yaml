@@ -116,7 +116,7 @@ jobs:
       working-directory: ./AtomVM/src/platforms/esp32/components/
       run: |
         git clone https://github.com/atomvm/atomvm_neopixel
-	git clone https://github.com/atomvm/atomvm_mqtt_client
+        git clone https://github.com/atomvm/atomvm_mqtt_client
 
     - name: "Build ${{ matrix.soc }} with idf.py"
       shell: bash
