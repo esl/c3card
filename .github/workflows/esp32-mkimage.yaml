@@ -111,12 +111,13 @@ jobs:
       run: |
         cp sdkconfig.release-defaults sdkconfig.defaults
 
-    - name: "Clone required drivers"
+    - name: "Clone required components"
       shell: bash
       working-directory: ./AtomVM/src/platforms/esp32/components/
       run: |
         git clone https://github.com/atomvm/atomvm_neopixel
         git clone https://github.com/atomvm/atomvm_mqtt_client
+        git clone --branch resource_nif https://github.com/arpunk/atomvm_adc
 
     - name: "Build ${{ matrix.soc }} with idf.py"
       shell: bash
