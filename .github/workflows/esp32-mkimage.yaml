@@ -14,19 +14,22 @@ on:
     paths:
       - '.github/workflows/esp32-mkimage.yaml'
       - 'src/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref != 'refs/heads/master' && github.ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  esp32-release:
+  build-and-release:
+    name: "Build and release"
     runs-on: ubuntu-latest
     container: espressif/idf:v${{ matrix.idf-version }}
-
     strategy:
       matrix:
         idf-version: ["5.2"]
@@ -47,7 +50,10 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        fetch-tags: true
+        fetch-depth: 0
 
     - uses: erlef/setup-beam@v1
       with:
@@ -55,11 +61,10 @@ jobs:
         elixir-version: ${{ matrix.elixir_version }}
         rebar3-version: '3.23.0'
 
-    - name: "APT update"
-      run: apt update -y
-
-    - name: "Install deps"
-      run: DEBIAN_FRONTEND=noninteractive apt install -y ${{ matrix.compiler_pkgs}} git cmake gperf zlib1g-dev
+    - name: "Install dependencies"
+      run: |
+        apt update -y
+        DEBIAN_FRONTEND=noninteractive apt install -y ${{ matrix.compiler_pkgs}} git cmake gperf zlib1g-dev
 
     # needed for generating AtomVM version when running in a docker container
     - name: "Configure Git"
@@ -147,9 +152,9 @@ jobs:
         ls -l *.img
 
     - name: "Upload ${{ matrix.soc }} artifacts"
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: atomvm-${{ matrix.soc }}-image
+        name: atomvm-c3card-${{ matrix.soc }}-image
         path: ./AtomVM/src/platforms/esp32/build/atomvm-${{ matrix.soc }}.img
         if-no-files-found: error
 
@@ -162,10 +167,65 @@ jobs:
         sha256sum "${ATOMVM_IMG}" > "${ATOMVM_IMG}.sha256"
 
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         draft: true
         fail_on_unmatched_files: true
         files: |
           ./AtomVM/src/platforms/esp32/build/AtomVM-c3card-${{ matrix.soc }}-${{ github.ref_name }}.img
           ./AtomVM/src/platforms/esp32/build/AtomVM-c3card-${{ matrix.soc }}-${{ github.ref_name }}.img.sha256
+
+  publish:
+    name: "Publish new firmware and website to GitHub Pages"
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: [build-and-release]
+    strategy:
+      matrix:
+        idf-version: ["5.2"]
+        cc: ["clang-15"]
+        cxx: ["clang++-15"]
+        cflags: ["-O3"]
+        otp: ["26"]
+        elixir_version: ["1.16"]
+        compiler_pkgs: ["clang-15"]
+        soc: ["esp32c3"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+      - name: Setup Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26.2'
+          rebar3-version: '3.23.0'
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Generate documentation
+        run: |
+          rebar3 ex_doc
+      - uses: actions/download-artifact@v4
+        with:
+          name: atomvm-c3card-${{ matrix.soc }}-image
+          path: output
+      - name: Create manifest.json
+        run: |
+          ATOMVM_IMG="AtomVM-c3card-${{ matrix.soc }}-${{ github.ref_name }}.img"
+          VERSION=$(git describe --tags)
+          jq -n \
+            --arg name "AtomVM-c3card-${{ matrix.soc }}-${{ github.ref_name }}" \
+            --arg version "$VERSION" \
+            '{"name": $name, "version": $version, "builds": [{"chipFamily":"ESP32-C3", "parts": [{"path": "AtomVM-c3card-${{ matrix.soc }}-${{ github.ref_name }}.img", "offset": 0}]}]}' > doc/manifest.json
+          mv output/atomvm-${{ matrix.soc }}.img doc/"${ATOMVM_IMG}"
+          ls -R .
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: doc
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
