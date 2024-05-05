@@ -25,12 +25,14 @@ save_config(SubmittedConfig) ->
         ssid := SSID,
         pass := Pass,
         gateway := Gateway,
+        mqtt_enable := EnableMQTT,
         mqtt_user := User,
         mqtt_password := Password,
         device_name := DeviceName
     } = SubmittedConfig,
 
     MQTTOpts = #{
+        enabled => EnableMQTT,
         host => Gateway,
         user => User,
         password => Password
@@ -82,6 +84,7 @@ handle_req("POST", [], Conn) ->
 
     SSID = proplists:get_value("ssid", Params),
     Pass = proplists:get_value("pass", Params),
+    EnableMQTT = proplists:get_value("gateway_enabled", Params, "off"),
     Gateway = proplists:get_value("gateway", Params),
     User = proplists:get_value("gateway_user", Params),
     Password = proplists:get_value("gateway_pass", Params),
@@ -92,6 +95,7 @@ handle_req("POST", [], Conn) ->
             ssid => SSID,
             pass => Pass,
             gateway => erlang:list_to_binary(Gateway),
+            mqtt_enable => enable_mqtt(EnableMQTT),
             mqtt_user => erlang:list_to_binary(User),
             mqtt_password => erlang:list_to_binary(Password),
             device_name => erlang:list_to_binary(DeviceName)
@@ -111,6 +115,9 @@ handle_req(Method, Path, Conn) ->
     http_server:reply(404, Body, Conn).
 
 %% HTML templates
+
+enable_mqtt("on") -> true;
+enable_mqtt("off") -> false.
 
 get_template(Template) ->
     case atomvm:read_priv(c3card, Template) of

@@ -13,9 +13,6 @@
 
 -define(SERVER, ?MODULE).
 
--define(DEFAULT_SDA_PIN, 2).
--define(DEFAULT_SCL_PIN, 3).
-
 -define(INTENSITY, 10).
 -define(PERIOD, 1_000).
 
@@ -35,16 +32,24 @@ init({Config, I2CBus}) ->
             worker(c3card_sensors, Config, [{i2c_bus, I2CBus}]),
             worker(c3card_buttons, Config, []),
             worker(c3card_neopixel, Config, []),
-            worker(c3card_screen, Config, [{i2c_bus, I2CBus}]),
-            worker(c3card_mqtt, Config, []),
-            worker(c3card_status, Config, [])
-        ],
+            worker(c3card_screen, Config, [{i2c_bus, I2CBus}])
+        ] ++ maybe_mqtt(Config),
 
     SupFlags = {one_for_one, ?INTENSITY, ?PERIOD},
     {ok, {SupFlags, ChildSpecs}}.
 
 %% internal functions
 
+%% @hidden
+maybe_mqtt(#{c3card_mqtt := #{enabled := true}} = Config) ->
+    [
+        worker(c3card_mqtt, Config, []),
+        worker(c3card_status, Config, [{enable_mqtt, true}])
+    ];
+maybe_mqtt(Config) ->
+    [worker(c3card_status, Config, [{enable_mqtt, false}])].
+
+%% @hidden
 worker(Mod, Config, Opts) ->
     Args = maps:to_list(maps:get(Mod, Config)),
     {Mod, {Mod, start_link, [Args ++ Opts]}, permanent, brutal_kill, worker, [Mod]}.

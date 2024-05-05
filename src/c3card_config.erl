@@ -137,7 +137,7 @@ device_id() ->
 default_config() ->
     #{
         c3card_buttons => #{},
-        c3card_mqtt => #{handler => c3card_mqtt_handler},
+        c3card_mqtt => #{enabled => false, handler => c3card_mqtt_handler},
         c3card_neopixel => #{},
         c3card_screen => #{screen => {1, c3card_screen_sysinfo}},
         c3card_status => #{},

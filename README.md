@@ -2,6 +2,7 @@
 
 [![Erlang/OTP Version](https://img.shields.io/badge/erlang%2Fotp-%2026-blue)](http://www.erlang.org)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://esl.github.io/c3card/)
+[![Latest release](https://img.shields.io/github/v/release/esl/c3card)](https://github.com/esl/c3card/releases)
 
 ![c3card](/images/c3card.jpg)
 

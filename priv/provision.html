@@ -320,8 +320,9 @@
           </p>
         </div>
 
+	<h2>Network</h2>
+
         <div class="form-control">
-          <h2>Network</h2>
           <label for="ssid">SSID:</label>
           <input
             type="text"
@@ -341,8 +342,18 @@
             />
         </div>
 
+	<h2>Device</h2>
+
+	<div class="form-control">
+	  <label for="gateway_enabled">Enable MQTT?:</label>
+	  <input
+            type="checkbox"
+            name="gateway_enabled"
+	    />
+	  <p class="info">Enable MQTT communication</p>
+	</div>
+
         <div class="form-control">
-          <h2>Device</h2>
           <label for="gateway">Gateway:</label>
           <input
             type="text"

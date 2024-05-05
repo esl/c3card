@@ -50,10 +50,16 @@ start_link(Config) ->
 %% gen_server callbacks
 
 %% @private
-init(_Config) ->
-    Timer = timer_manager:send_after(?SEND_EVERY, self(), report),
-    ?LOG_NOTICE("starting status reporter..."),
-    {ok, #{timer => Timer, ip => undefined}}.
+init(Config) ->
+    case proplists:get_value(enable_report, Config, false) of
+        true ->
+            Timer = timer_manager:send_after(?SEND_EVERY, self(), report),
+            ?LOG_NOTICE("starting status reporter..."),
+            {ok, #{timer => Timer, ip => undefined}};
+        false ->
+            ?LOG_NOTICE("starting status reporter..."),
+            {ok, #{timer => undefined, ip => undefined}}
+    end.
 
 %% @private
 handle_call(get_ip, _From, State) ->

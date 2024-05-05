@@ -69,7 +69,12 @@ start() ->
                 info => DeviceInfo,
                 attributes => CardAttrs
             },
-            c3card_mqtt:publish(<<"provision">>, ProvisionInfo),
+            case Config of
+                #{c3card_mqtt := #{enabled := true}} ->
+                    c3card_mqtt:publish(<<"provision">>, ProvisionInfo);
+                _ ->
+                    noop
+            end,
             ?LOG_NOTICE("entering loop..."),
             loop(#{sleep_ms => 100})
     end.
