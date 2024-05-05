@@ -1,0 +1,12 @@
+{
+  "name": "C3card",
+  "version": "v0.2.0",
+  "builds": [
+    {
+      "chipFamily": "ESP32-C3",
+      "parts": [
+        { "path": "https://github.com/esl/c3card/releases/download/v0.2.0/AtomVM-c3card-esp32c3-master.img", "offset": 0 }
+      ]
+    }
+  ]
+}

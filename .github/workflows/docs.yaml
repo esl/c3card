@@ -27,21 +27,26 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       imageOS: ubuntu22
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
       - name: Setup Erlang
         uses: erlef/setup-beam@v1
         with:
           otp-version: '26.2'
-          rebar3-version: '3.22.1'
+          rebar3-version: '3.23.0'
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Generate documentation
-        run: rebar3 ex_doc
+        run: |
+          rebar3 ex_doc
+          cp installer/manifest.json doc/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
