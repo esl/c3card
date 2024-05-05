@@ -53,6 +53,7 @@ jobs:
       with:
         otp-version: ${{ matrix.otp }}
         elixir-version: ${{ matrix.elixir_version }}
+        rebar3-version: '3.22.1'
 
     - name: "APT update"
       run: apt update -y
@@ -103,6 +104,16 @@ jobs:
       working-directory: build/libs
       run: |
         LANG=en_US.UTF-8 make
+
+    - name: "Build the c3card firmware"
+      working-directory: .
+      run: |
+        rebar3 atomvm packbeam
+
+    - name: "Copy mkimage.config.in template"
+      working-directory: .
+      run: |
+        cp ./installer/mkimage.config.in ./AtomVM/src/platforms/esp32/tools/
 
     - name: "Use release defaults"
       if: startsWith(github.ref, 'refs/tags/')

@@ -19,3 +19,4 @@ logs
 rebar3.crashdump
 *~
 /include/version.hrl
+/VERSION
