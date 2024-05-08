@@ -1,6 +1,6 @@
 {
   "name": "AtomVM-c3card-esp32c3-master",
-  "version": "42",
+  "version": "43",
   "files": [
     {
       "path": "./output/AtomVM-c3card-esp32c3-master.img",
