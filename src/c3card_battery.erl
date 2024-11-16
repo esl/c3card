@@ -38,20 +38,15 @@ start_link(Config) ->
 %% gen_server callbacks
 
 init(_Config) ->
-    ADCOpts = [
-        {pin, ?DEFAULT_VBATTERY_PIN},
-        {bitwidth, bit_max},
-        %% 0 mV ~ 2500 mV with ADC_11db
-        {attenuation, db_11}
-    ],
-    ADC = adc:open(ADCOpts),
+    {ok, ADC_UNIT} = esp_adc:init(),
+    {ok, ADC_CHAN} = esp_adc:acquire(?DEFAULT_VBATTERY_PIN, ADC_UNIT),
     ?LOG_NOTICE("starting battery status helper"),
-    {ok, #{adc => ADC}}.
+    {ok, #{adc_chan => ADC_CHAN, adc_unit => ADC_UNIT}}.
 
 handle_call(current_state, _From, State) ->
-    #{adc := ADC} = State,
+    #{adc_chan := ADC_CHAN, adc_unit := ADC_UNIT} = State,
     ReadingOpts = [{samples, ?SAMPLES}, {raw, true}, {voltage, true}],
-    {ok, _BattRaw, BattVoltage} = adc:take_reading(ADC, ReadingOpts),
+    {ok, {_BattRaw, BattVoltage}} = esp_adc:sample(ADC_CHAN, ADC_UNIT, ReadingOpts),
     Reply = #{
         voltage => BattVoltage,
         level => calculate_battery_level(BattVoltage)

@@ -11,8 +11,7 @@
         scd40,
         neopixel,
         ssd1306,
-        atomvm_mqtt_client,
-        adc
+        atomvm_mqtt_client
     ]},
     {env, []},
     {modules, []},
