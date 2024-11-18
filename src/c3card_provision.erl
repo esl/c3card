@@ -86,8 +86,8 @@ handle_req("POST", [], Conn) ->
     Pass = proplists:get_value("pass", Params),
     EnableMQTT = proplists:get_value("gateway_enabled", Params, "off"),
     Gateway = proplists:get_value("gateway", Params),
-    User = proplists:get_value("gateway_user", Params),
-    Password = proplists:get_value("gateway_pass", Params),
+    User = proplists:get_value("gateway_user", Params, ""),
+    Password = proplists:get_value("gateway_pass", Params, ""),
     DeviceName = proplists:get_value("device_name", Params),
 
     ok = save_config(
